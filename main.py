@@ -21,10 +21,5 @@ def main():
     result_report = operations.generateReport("12345678900", "IBAN123")
     print("Resultado:", result_report)
 
-    # Teste de Geração de Relatório (IBAN sem transações)
-    print("\n=== Teste de Geração de Relatório para IBAN sem transações ===")
-    result_empty_report = operations.generateReport("12345678900", "IBAN789")
-    print("Resultado:", result_empty_report)
-
 if __name__ == "__main__":
     main()
