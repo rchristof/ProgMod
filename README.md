@@ -1,6 +1,7 @@
 Projeto para a aula de Programação Modular
 
 - Error Codes:
+
 | Code 	| Error                	|
 |:----:	|----------------------	|
 |   0  	| Success              	|
