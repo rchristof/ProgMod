@@ -3,6 +3,8 @@ from user import isLoggedIn  # Função do módulo User
 from datetime import datetime
 from fpdf import FPDF
 
+__all__ = ["makeDeposit", "makeTransfer", "generateReport"]
+
 transactions = []
 
 def makeDeposit(CPF, IBAN, val):
