@@ -1,10 +1,17 @@
 import re
+import conta
 
-__all__ = ["createNewUser","login", "logout","isLoggedIn", "verifyExistenceUser"]
+__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser"]
 
 loggedUserCPF = None
 users = []
 
+
+msg_success = {"code": 0, "message": "Success"}
+msg_err_invalidNameSurname = {"code": 9, "message": "Invalid name/surname"}
+msg_err_invalidPassword = {"code": 7, "message": "Invalid password"}
+msg_err_userNotExists = {"code": 3, "message": "User not exists"}
+msg_err_userNotLoggedIn = {"code": 1, "message": "User not logged in"}
 
 def is_valid_name_or_surname(name):
     if not isinstance(name, str):
@@ -26,21 +33,20 @@ def is_valid_password(password):
 
 def createNewUser(name, surname, cpf, password):
     if is_valid_name_or_surname(name) == False:
-        return 9    # Invalid name/surname code
+        return msg_err_invalidNameSurname
     if is_valid_name_or_surname(surname) == False:
-        return 9    # Invalid name/surname code
+        return msg_err_invalidNameSurname
     
     # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
 
     if is_valid_password(password) == False:
-        return 7    # Invalid password code
-
-
-    #chiamata createNewConta(cpf) e gestione varie casistiche sui parametri di ritorno
-    
+        return msg_err_invalidPassword
 
     users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
-    return 0    # Success code
+
+    conta.createNewConta(cpf)
+
+    return msg_success
 
 
 def login(cpf, password):
@@ -50,19 +56,19 @@ def login(cpf, password):
         if user["cpf"] == cpf and user["password"] == password:
             global loggedUserCPF
             loggedUserCPF = cpf
-            return 0    # Success code
-
-    return 3    # User not exists code
+            return msg_success
+        
+    return msg_err_userNotExists
 
 
 def logout(cpf):
     # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
 
     if loggedUserCPF != cpf:
-        return 1    # User not logged in code
+        return msg_err_userNotLoggedIn
     
     loggedUserCPF = None
-    return 0    # Success code
+    return msg_success
 
 
 def isLoggedIn(cpf):
