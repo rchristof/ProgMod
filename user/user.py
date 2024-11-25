@@ -9,6 +9,7 @@ users = []
 
 msg_success = {"code": 0, "message": "Success"}
 msg_err_invalidNameSurname = {"code": 9, "message": "Invalid name/surname"}
+msg_err_invalidCpf = {"code": 8, "message": "Invalid cpf"}
 msg_err_invalidPassword = {"code": 7, "message": "Invalid password"}
 msg_err_userNotExists = {"code": 3, "message": "User not exists"}
 msg_err_userNotLoggedIn = {"code": 1, "message": "User not logged in"}
@@ -37,7 +38,8 @@ def createNewUser(name, surname, cpf, password):
     if is_valid_name_or_surname(surname) == False:
         return msg_err_invalidNameSurname
     
-    # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
 
     if is_valid_password(password) == False:
         return msg_err_invalidPassword
@@ -50,7 +52,8 @@ def createNewUser(name, surname, cpf, password):
 
 
 def login(cpf, password):
-    # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
 
     for user in users:
         if user["cpf"] == cpf and user["password"] == password:
@@ -62,7 +65,8 @@ def login(cpf, password):
 
 
 def logout(cpf):
-    # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
 
     if loggedUserCPF != cpf:
         return msg_err_userNotLoggedIn
@@ -72,7 +76,8 @@ def logout(cpf):
 
 
 def isLoggedIn(cpf):
-    # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
 
     if loggedUserCPF == cpf:
         return True
@@ -81,7 +86,8 @@ def isLoggedIn(cpf):
     
 
 def verifyExistenceUser(cpf):
-    # validazione CPF: come gestiamo la funzione di validazione del cpf a livello di moduli?
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
     
     for user in users:
         if user["cpf"] == cpf :
