@@ -1,7 +1,7 @@
-from user import verifyExistenceUser
+from user import *
 import random
 
-__all__ = ["updateBalance", "verifyExistenceConta"]
+__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta"]
 
 contas = []
 

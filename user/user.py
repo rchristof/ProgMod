@@ -1,5 +1,4 @@
 import re
-import conta
 
 __all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser"]
 
@@ -33,6 +32,8 @@ def is_valid_password(password):
 
 
 def createNewUser(name, surname, cpf, password):
+    from conta import createNewConta
+
     if is_valid_name_or_surname(name) == False:
         return msg_err_invalidNameSurname
     if is_valid_name_or_surname(surname) == False:
@@ -46,7 +47,7 @@ def createNewUser(name, surname, cpf, password):
 
     users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
 
-    conta.createNewConta(cpf)
+    createNewConta(cpf)
 
     return msg_success
 

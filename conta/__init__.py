@@ -1,2 +1,1 @@
-from .conta import updateBalance, verifyExistenceConta
-
+from .conta import *
