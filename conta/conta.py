@@ -1,6 +1,8 @@
 from user import verifyExistenceUser
 import random
 
+__all__ = ["updateBalance", "verifyExistenceConta"]
+
 contas = []
 
 def verifyFormatIban(IBAN):
