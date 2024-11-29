@@ -1,5 +1,5 @@
-#from conta import updateBalance, verifyExistenceConta, verifyBalance  # Funções do módulo Conta
-#from user import isLoggedIn  # Função do módulo User
+from conta import updateBalance, verifyExistenceConta, verifyBalance  # Funções do módulo Conta
+from user import isLoggedIn  # Função do módulo User
 from datetime import datetime
 from fpdf import FPDF
 import json
