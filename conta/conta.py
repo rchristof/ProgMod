@@ -8,7 +8,7 @@ contas = []
 
 def verifyFormatIban(IBAN):
     if isinstance(IBAN, str) and len(IBAN) == 8 and IBAN.isdigit():
-        return {"code": 0, "message": "Success"}  # Success
+        return msg_success  # Success
     return msg_err_invalidIban  # Invalid IBAN format
 
 def createNewConta(CPF):
@@ -41,9 +41,9 @@ def updateBalance(CPF, IBAN, val):
     for conta in contas:
         if conta['CPF'] == CPF and conta['IBAN'] == IBAN:
             if conta['balance'] + val < 0:
-                return {"code": 6, "message": "Insufficient balance"}  # Insufficient balance
+                return msg_err_insufficientBal  # Insufficient balance
             conta['balance'] += val
-            return {"code": 0, "message": "Success", "new_balance": conta['balance']}  # Success
+            return msg_success  # Success
 
     return msg_err_contaNotExists  # Conta not exists
 
