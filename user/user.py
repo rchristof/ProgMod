@@ -20,8 +20,8 @@ def is_valid_password(password):
     if not isinstance(password, str):
         return False
     
-    # Regex per verificare che sia una stringa di lunghezza minima 6 caratteri e massima 50
-    pattern = r"^.{6,50}$"
+    # Regex per verificare che sia una stringa di lunghezza minima 4 caratteri e massima 50
+    pattern = r"^.{4,50}$"
     return bool(re.match(pattern, password))
 
 
@@ -63,6 +63,7 @@ def logout(cpf):
     if len(cpf) != 11 or cpf.isdigit() == False:
         return msg_err_invalidCpf
 
+    global loggedUserCPF
     if loggedUserCPF != cpf:
         return msg_err_userNotLoggedIn
     
@@ -75,9 +76,9 @@ def isLoggedIn(cpf):
         return msg_err_invalidCpf
 
     if loggedUserCPF == cpf:
-        return True
+        return msg_success
     else:
-        return False
+        return msg_err_userNotLoggedIn
     
 
 def verifyExistenceUser(cpf):

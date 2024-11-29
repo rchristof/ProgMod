@@ -1,30 +1,147 @@
 import unittest
 from user import *
+from return_messages import *
 
-msg_success = {"code": 0, "message": "Success"}
-msg_err_invalidNameSurname = {"code": 9, "message": "Invalid name/surname"}
-msg_err_invalidCpf = {"code": 8, "message": "Invalid cpf"}
-msg_err_invalidPassword = {"code": 7, "message": "Invalid password"}
-msg_err_userNotExists = {"code": 3, "message": "User not exists"}
-msg_err_userNotLoggedIn = {"code": 1, "message": "User not logged in"}
+userTest = {"name": "Mario", "surname": "Rossi", "cpf": "12345678910", "password": "mariorossi1234"}
+userTest2 = {"name": "Gianni", "surname": "Verdi", "cpf": "22345678910", "password": "giannigianni"}
 
-userTest = {"name": "Mario", "surname": "Rossi", "cpf": "123", "password": "mariorossi1234"}
 
 class TestUser(unittest.TestCase):
     def test_01_createNewUser_ok_ret_val(self):
-        print("Test Case 01 - Inserting with success")
-        ret_val = user.createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
-        self.assertEqual(ret_val, 0)
+        print("Test Case 01 - Inserting user with success")
+        ret_val = createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
+        self.assertEqual(ret_val, msg_success)
 
     def test_02_createNewUser_ok_created(self):
         print("Test Case 02 - User saved in memory")
         self.assertTrue(verifyExistenceUser)
 
-    def test03_createNewUser_nok_invalid_name(self):
+    def test_03_createNewUser_nok_invalid_name(self):
         print("Test Case 03 - Not inserting, name invalid")
         ret_val = createNewUser("Abc123", userTest["surname"], userTest["cpf"], userTest["password"])
         self.assertEqual(ret_val, msg_err_invalidNameSurname)
 
+    def test_04_createNewUser_nok_invalid_surname(self):
+        print("Test Case 04 - Not inserting, surname invalid")
+        ret_val = createNewUser(userTest["name"], "Abc123", userTest["cpf"], userTest["password"])
+        self.assertEqual(ret_val, msg_err_invalidNameSurname)
+
+    def test_05_createNewUser_nok_invalid_cpf(self):
+        print("Test Case 05 - Not inserting, CPF invalid")
+        ret_val = createNewUser(userTest["name"], userTest["surname"], "123", userTest["password"])
+        self.assertEqual(ret_val, msg_err_invalidCpf)
+
+    def test_06_createNewUser_nok_invalid_password(self):
+        print("Test Case 06 - Not inserting, CPF invalid")
+        ret_val = createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], "12")
+        self.assertEqual(ret_val, msg_err_invalidPassword)
+
+
+    def test_07_login_ok_ret_val(self):
+        print("Test Case 07 - Login with success")
+        ret_val = login(userTest["cpf"], userTest["password"])
+        self.assertEqual(ret_val, msg_success)
+
+    def test_08_login_ok_logged(self):
+        print("Test Case 08 - User actually logged")
+        ret_val = isLoggedIn(userTest["cpf"])
+        self.assertEqual(ret_val, msg_success)
+
+    def test_09_login_ok_w_other_user(self):
+        print("Test Case 09 - Login with another user")
+        # creating a new user
+        ret_val = createNewUser(userTest2["name"], userTest2["surname"], userTest2["cpf"], userTest2["password"])
+        self.assertEqual(ret_val, msg_success)
+        # login with this new user
+        ret_val = login(userTest2["cpf"], userTest2["password"])
+        self.assertEqual(ret_val, msg_success)
+        ret_val = isLoggedIn(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_success)
+        # old user not logged in anymore
+        ret_val = isLoggedIn(userTest["cpf"])
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    def test_10_login_nok_invalid_cpf(self):
+        print("Test Case 10 - Login with invalid CPF")
+        ret_val = login("1234", userTest["password"])
+        self.assertEqual(ret_val, msg_err_invalidCpf)
+
+    def test_11_login_nok_user_not_exists(self):
+        print("Test Case 11 - Login with a non existing user")
+        ret_val = login("02345678910", "123")
+        self.assertEqual(ret_val, msg_err_userNotExists)
+
+    def test_12_login_nok_wrong_password(self):
+        print("Test Case 12 - Login with correct CPF but wrong password")
+        ret_val = login(userTest["cpf"], "123")
+        self.assertEqual(ret_val, msg_err_userNotExists)
+
+
+    def test_13_logout_ok_ret_val(self):
+        print("Test Case 13 - Logout with success")
+        ret_val = logout(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_success)
+
+    def test_14_logout_ok_logged_out(self):
+        print("Test Case 14 - User actually logged out")
+        ret_val = isLoggedIn(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    def test_15_logout_nok_invalid_cpf(self):
+        print("Test Case 15 - Logout with invalid cpf")
+        ret_val = logout("1234")
+        self.assertEqual(ret_val, msg_err_invalidCpf)
+        
+    def test_16_logout_nok_user_not_logged(self):
+        print("Test Case 16 - Logout of a not logged user")
+        # login of userTest
+        login(userTest["cpf"], userTest["password"])
+        ret_val = logout(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    def test_17_logout_nok_user_not_existing(self):
+        print("Test Case 17 - Logout of a not existing user")
+        ret_val = logout("02345678910")
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+
+    def test_18_isLoggedIn_ok(self):
+        print("Test Case 18 - isLoggedIn, user is logged in")
+        ret_val = isLoggedIn(userTest["cpf"])
+        self.assertEqual(ret_val, msg_success)
+
+    def test_19_isLoggedIn_nok_invalid_cpf(self):
+        print("Test Case 19 - isLoggedIn, CPF invalid")
+        ret_val = isLoggedIn("1234")
+        self.assertEqual(ret_val, msg_err_invalidCpf)
+
+    def test_20_isLoggedIn_nok_user_not_logged(self):
+        print("Test Case 20 - isLoggedIn, user not logged in")
+        ret_val = isLoggedIn(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    def test_21_isLoggedIn_nok_user_not_existing(self):
+        print("Test Case 21 - isLoggedIn, user not exisiting")
+        ret_val = isLoggedIn("02345678910")
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    
+    def test_22_verifyExistenceUser_ok(self):
+        print("Test Case 22 - verifyExistenceUser, users existing")
+        ret_val = verifyExistenceUser(userTest["cpf"])
+        self.assertEqual(ret_val, msg_success)
+        ret_val = verifyExistenceUser(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_success)
+
+    def test_23_verifyExistenceUser_nok_invalid_cpf(self):
+        print("Test Case 23 - verifyExistenceUser, CPF invalid")
+        ret_val = verifyExistenceUser("1234")
+        self.assertEqual(ret_val, msg_err_invalidCpf)
+
+    def test_24_verifyExistenceUser_nok_user_not_existing(self):
+        print("Test Case 24 - verifyExistenceUser, user not existing")
+        ret_val = verifyExistenceUser("02345678910")
+        self.assertEqual(ret_val, msg_err_userNotExists)
 
 
 unittest.main()
