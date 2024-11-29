@@ -1,17 +1,11 @@
 import re
+from return_messages import *
 
 __all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser"]
 
 loggedUserCPF = None
 users = []
 
-
-msg_success = {"code": 0, "message": "Success"}
-msg_err_invalidNameSurname = {"code": 9, "message": "Invalid name/surname"}
-msg_err_invalidCpf = {"code": 8, "message": "Invalid cpf"}
-msg_err_invalidPassword = {"code": 7, "message": "Invalid password"}
-msg_err_userNotExists = {"code": 3, "message": "User not exists"}
-msg_err_userNotLoggedIn = {"code": 1, "message": "User not logged in"}
 
 def is_valid_name_or_surname(name):
     if not isinstance(name, str):
@@ -92,6 +86,6 @@ def verifyExistenceUser(cpf):
     
     for user in users:
         if user["cpf"] == cpf :
-            return True
+            return msg_success
 
-    return False
+    return msg_err_userNotExists
