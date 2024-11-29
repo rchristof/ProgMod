@@ -1,34 +1,63 @@
-from conta import updateBalance, verifyExistenceConta, verifyBalance  # Funções do módulo Conta
-from user import isLoggedIn  # Função do módulo User
+#from conta import updateBalance, verifyExistenceConta, verifyBalance  # Funções do módulo Conta
+#from user import isLoggedIn  # Função do módulo User
 from datetime import datetime
-from fpdf import FPDF
+#from fpdf import FPDF
 import os
+from return_messages import *
 
 __all__ = ["makeDeposit", "makeTransfer", "generateReport"]
 
 transactions = []
 
+##### Functions for testing the code #####
+
+loggedUserCPF = "12345678901"
+
+def isLoggedIn(cpf):
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
+    if loggedUserCPF == cpf:
+        return msg_success
+    else:
+        return msg_err_userNotLoggedIn
+
+def verifyExistenceConta(cpf, iban):
+    return msg_success
+
+def updateBalance(cpf, iban, val):
+    return msg_success
+
+############################################
+
+
 def makeDeposit(CPF, IBAN, val):
     # Verifica se o usuário está logado
-    if isLoggedIn(CPF) != 0:
-        return {"code": 1, "message": "User not logged in"}
+    resultIsLoggedIn = isLoggedIn(CPF)
+    if resultIsLoggedIn != msg_success:
+        return resultIsLoggedIn
 
+    # Verifica se o formato do IBAN é válido
+    if (isinstance(IBAN, str) == False) or ((len(IBAN) == 8) == False) or (IBAN.isdigit() == False):
+        return msg_err_invalidIbanFormat  # Invalid IBAN format
+    
     # Verifica se a conta existe
-    if verifyExistenceConta(CPF, IBAN) != 0:
-        return {"code": 2, "message": "Conta not exists"}
+    resultVerifyExistenceConta = verifyExistenceConta(CPF, IBAN)
+    if resultVerifyExistenceConta != msg_success:
+        return resultVerifyExistenceConta
 
     # Verifica se o valor é válido
-    if val <= 0:
-        return {"code": 5, "message": "Invalid val"}
+    if (isinstance(val, (int, float)) == False) or val <= 0:
+        return msg_err_invalidVal
 
     # Atualiza o saldo da conta
     update_result = updateBalance(CPF, IBAN, val)
-    if update_result["code"] != 0:
+    if update_result != msg_success:
         return update_result  # Retorna erro da função updateBalance
 
     # Transação registrada
     updateTransactions(IBAN, IBAN, val)  # sourceIBAN = destIBAN indica depósito
-    return {"code": 0, "message": "Deposit successful"}
+    return msg_success
+
 
 def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
     # Verifica se o usuário está logado
