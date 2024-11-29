@@ -40,7 +40,11 @@ def saveTransactionsToFile(file_path="transactions.txt"):
     with open(file_path, "w") as file:
         json.dump(getTransactions(), file, indent=4)  # Obtém a lista atual
 
+'''
 ##### Functions for testing the code #####
+
+def getTransactions():
+    return transactions
 
 loggedUserCPF = "12345678901"
 
@@ -62,6 +66,7 @@ def verifyBalance(cpf, iban, val):
     return msg_success
 
 ############################################
+'''
 
 
 def makeDeposit(CPF, IBAN, val):
@@ -91,7 +96,6 @@ def makeDeposit(CPF, IBAN, val):
     # Transação registrada
     updateTransactions(IBAN, IBAN, val)  # sourceIBAN = destIBAN indica depósito
     return msg_success
-
 
 def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
     
