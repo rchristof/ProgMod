@@ -2,11 +2,42 @@ from conta import updateBalance, verifyExistenceConta, verifyBalance  # Funçõe
 from user import isLoggedIn  # Função do módulo User
 from datetime import datetime
 from fpdf import FPDF
+import json
 import os
 
 __all__ = ["makeDeposit", "makeTransfer", "generateReport"]
 
-transactions = []
+_transactions = []
+
+def getTransactions():
+    """Retorna uma cópia da lista de transações."""
+    return _transactions.copy()
+
+
+def setTransactions(transactions):
+    """Substitui a lista de transações."""
+    _transactions.clear()
+    _transactions.extend(transactions)
+
+
+def loadTransactionsFromFile(file_path="transactions.txt"):
+    """Lê as transações de um arquivo e preenche a lista."""
+    try:
+        with open(file_path, "r") as file:
+            transactions = json.load(file)
+            setTransactions(transactions)  # Atualiza a lista de transações
+    except FileNotFoundError:
+        print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
+        setTransactions([])  # Inicializa a lista como vazia
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
+        setTransactions([])
+
+
+def saveTransactionsToFile(file_path="transactions.txt"):
+    """Sobrescreve o arquivo com as transações atuais da lista."""
+    with open(file_path, "w") as file:
+        json.dump(getTransactions(), file, indent=4)  # Obtém a lista atual
 
 def makeDeposit(CPF, IBAN, val):
     # Verifica se o usuário está logado
@@ -59,52 +90,43 @@ def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
     return {"code": 0, "message": "Transfer successful"}
 
 def generateReport(CPF, IBAN):
+    """Gera um relatório em PDF para as transações de um IBAN."""
     report = sorted(
-        [t for t in transactions if t["sourceIBAN"] == IBAN or t["destIBAN"] == IBAN],
-        key=lambda x: x["date"]
+        [t for t in _transactions if t["sourceIBAN"] == IBAN or t["destIBAN"] == IBAN],
+        key=lambda x: x["date"],
     )
 
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
-    pdf.cell(200, 10, txt="Transaction Report".encode("utf-32").decode("utf-32"), ln=True, align="C")
-    pdf.cell(200, 10, txt=f"IBAN: {IBAN}".encode("utf-32").decode("utf-32"), ln=True, align="L")
+    pdf.cell(200, 10, txt="Transaction Report", ln=True, align="C")
+    pdf.cell(200, 10, txt=f"IBAN: {IBAN}", ln=True, align="L")
     pdf.cell(200, 10, txt="Generated on: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"), ln=True, align="L")
     pdf.ln(10)
 
     for t in report:
-        if t["sourceIBAN"] == t["destIBAN"]:
-            transaction_type = "Deposit".encode("utf-32").decode("utf-32")
-            details = f"Amount: {t['amount']}".encode("utf-32").decode("utf-32")
-        else:
-            transaction_type = "Transfer".encode("utf-32").decode("utf-32")
-            details = f"Amount: {t['amount']} to {t['destIBAN']}".encode("utf-32").decode("utf-32")
-
+        transaction_type = "Deposit" if t["sourceIBAN"] == t["destIBAN"] else "Transfer"
+        details = (
+            f"Amount: {t['amount']}"
+            if t["sourceIBAN"] == t["destIBAN"]
+            else f"Amount: {t['amount']} to {t['destIBAN']}"
+        )
         pdf.cell(200, 10, txt=f"{t['date']} - {transaction_type} - {details}", ln=True, align="L")
 
-    utf32_pdf_file = f"report_{CPF}_{IBAN}_utf32.pdf"
-    pdf.output(utf32_pdf_file)
-
-    conversion_command = f"utils\\conversor\\conv_utf32_utf8.exe {utf32_pdf_file}"
-    conversion_result = os.system(conversion_command)
-
-    if conversion_result != 0:
-        return {"code": 3, "message": "Error converting PDF from UTF-32 to UTF-8"}
-
-    utf8_pdf_file = utf32_pdf_file.replace("_utf32", "_utf8")
-
-    return {"code": 0, "message": "Report generated and converted successfully", "utf8_file": utf8_pdf_file}
+    file_name = f"report_{CPF}_{IBAN}.pdf"
+    pdf.output(file_name)
+    return
 
 def updateTransactions(sourceIBAN, destIBAN, amount):
-    # Registra uma nova transação
+    """Adiciona uma nova transação à lista."""
     transaction = {
         "sourceIBAN": sourceIBAN,
         "destIBAN": destIBAN,
         "amount": amount,
-        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
-    transactions.append(transaction)
+    _transactions.append(transaction)
 
 
 """

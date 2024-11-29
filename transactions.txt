@@ -1,0 +1,26 @@
+[
+    {
+        "sourceIBAN": "IBAN123",
+        "destIBAN": "IBAN123",
+        "amount": 100.0,
+        "date": "2024-11-29 16:10:43"
+    },
+    {
+        "sourceIBAN": "IBAN123",
+        "destIBAN": "IBAN456",
+        "amount": 50.0,
+        "date": "2024-11-29 16:10:43"
+    },
+    {
+        "sourceIBAN": "IBAN123",
+        "destIBAN": "IBAN123",
+        "amount": 100.0,
+        "date": "2024-11-29 16:10:55"
+    },
+    {
+        "sourceIBAN": "IBAN123",
+        "destIBAN": "IBAN456",
+        "amount": 50.0,
+        "date": "2024-11-29 16:10:55"
+    }
+]
