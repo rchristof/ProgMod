@@ -2,6 +2,7 @@ from conta import updateBalance, verifyExistenceConta, verifyBalance  # Funçõe
 from user import isLoggedIn  # Função do módulo User
 from datetime import datetime
 from fpdf import FPDF
+import os
 
 __all__ = ["makeDeposit", "makeTransfer", "generateReport"]
 
@@ -57,7 +58,7 @@ def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
     updateTransactions(sourceIBAN, destIBAN, val)  # sourceIBAN != destIBAN indica transferência
     return {"code": 0, "message": "Transfer successful"}
 
-def generateReport(CPF, IBAN):
+def generate_report_utf32(CPF, IBAN):
     # Verifica se o usuário está logado
     if isLoggedIn(CPF) != 0:
         return {"code": 1, "message": "User not logged in"}
@@ -72,17 +73,12 @@ def generateReport(CPF, IBAN):
         key=lambda x: x["date"]
     )
 
-    # Gera o PDF
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
+    # Gera o conteúdo do relatório
+    content = []
+    content.append("Transaction Report\n")
+    content.append(f"IBAN: {IBAN}\n")
+    content.append("Generated on: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n\n")
 
-    pdf.cell(200, 10, txt="Transaction Report", ln=True, align="C")
-    pdf.cell(200, 10, txt=f"IBAN: {IBAN}", ln=True, align="L")
-    pdf.cell(200, 10, txt="Generated on: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"), ln=True, align="L")
-    pdf.ln(10)
-
-    # Adiciona transações ao PDF
     for t in report:
         if t["sourceIBAN"] == t["destIBAN"]:
             transaction_type = "Deposit"
@@ -90,13 +86,21 @@ def generateReport(CPF, IBAN):
         else:
             transaction_type = "Transfer"
             details = f"Amount: {t['amount']} to {t['destIBAN']}"
+        content.append(f"{t['date']} - {transaction_type} - {details}\n")
 
-        pdf.cell(200, 10, txt=f"{t['date']} - {transaction_type} - {details}", ln=True, align="L")
+    # Escreve em UTF-32
+    utf32_file_name = f"report_{CPF}_{IBAN}_utf32.txt"
+    with open(utf32_file_name, "w", encoding="utf-32") as utf32_file:
+        utf32_file.writelines(content)
 
-    # Salva o PDF
-    file_name = f"report_{CPF}_{IBAN}.pdf"
-    pdf.output(file_name)
-    return {"code": 0, "message": "Report generated", "file": file_name}
+    # Converte para UTF-8 usando a função C
+    utf8_file_name = f"report_{CPF}_{IBAN}_utf8.txt"
+    result = os.system(f"./conv_utf32_utf8 {utf32_file_name} {utf8_file_name}")
+
+    if result != 0:
+        return {"code": 3, "message": "Error converting to UTF-8"}
+
+    return {"code": 0, "message": "Report generated and converted", "utf32_file": utf32_file_name, "utf8_file": utf8_file_name}
 
 def updateTransactions(sourceIBAN, destIBAN, amount):
     # Registra uma nova transação

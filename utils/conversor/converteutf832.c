@@ -1,7 +1,6 @@
 /* Rafael Dana Christof 2410977 3WA */
 
 #include <stdio.h>
-#include "converteutf832.h"
 
 int convUtf32p8(FILE *arquivo_entrada, FILE *arquivo_saida) {
     if (!arquivo_entrada || !arquivo_saida) {
@@ -54,5 +53,38 @@ int convUtf32p8(FILE *arquivo_entrada, FILE *arquivo_saida) {
         }
     }
 
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Uso: %s <arquivo_entrada> <arquivo_saida>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *arquivo_entrada = fopen(argv[1], "rb");
+    if (!arquivo_entrada) {
+        fprintf(stderr, "Erro ao abrir arquivo de entrada: %s\n", argv[1]);
+        return 1;
+    }
+
+    FILE *arquivo_saida = fopen(argv[2], "wb");
+    if (!arquivo_saida) {
+        fprintf(stderr, "Erro ao abrir arquivo de saída: %s\n", argv[2]);
+        fclose(arquivo_entrada);
+        return 1;
+    }
+
+    int result = convUtf32p8(arquivo_entrada, arquivo_saida);
+
+    fclose(arquivo_entrada);
+    fclose(arquivo_saida);
+
+    if (result != 0) {
+        fprintf(stderr, "Erro ao converter o arquivo.\n");
+        return 1;
+    }
+
+    printf("Conversão concluída com sucesso.\n");
     return 0;
 }
