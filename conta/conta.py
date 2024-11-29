@@ -13,8 +13,9 @@ def verifyFormatIban(IBAN):
 
 def createNewConta(CPF):
     # Verifica se o usuário existe
-    if not verifyExistenceUser(CPF):
-        return msg_err_userNotExists  # User not exists
+    resultVerifyExistenceUser = verifyExistenceConta(CPF)
+    if resultVerifyExistenceUser != msg_success:
+        return resultVerifyExistenceUser  # User not exists or CPF invalud
     
     # Verifica se já existe uma conta para o CPF
     if verifyExistenceConta(CPF):
@@ -48,6 +49,9 @@ def updateBalance(CPF, IBAN, val):
     return msg_err_contaNotExists  # Conta not exists
 
 def verifyExistenceConta(CPF, IBAN=None):
+    if len(CPF) != 11 or CPF.isdigit() == False:
+            return msg_err_invalidCpf
+
     for conta in contas:
         if conta['CPF'] == CPF:
             if IBAN is None or conta['IBAN'] == IBAN:
