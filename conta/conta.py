@@ -13,13 +13,13 @@ def verifyFormatIban(IBAN):
 
 def createNewConta(CPF):
     # Verifica se o usuário existe
-    resultVerifyExistenceUser = verifyExistenceConta(CPF)
+    resultVerifyExistenceUser = verifyExistenceUser(CPF)
     if resultVerifyExistenceUser != msg_success:
-        return resultVerifyExistenceUser  # User not exists or CPF invalud
+        return resultVerifyExistenceUser  # User not exists or CPF invalid
     
     # Verifica se já existe uma conta para o CPF
-    if verifyExistenceConta(CPF):
-        return msg_err_contaNotExists  # Conta not exists
+    if verifyExistenceConta(CPF) == msg_success:
+        return msg_err_contaAlreadyExists  # Conta already exists
 
     # Criação do número IBAN de forma aleatória
     iban = str(random.randint(10000000, 99999999)) 

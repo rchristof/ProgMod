@@ -8,7 +8,9 @@ __all__ = [
         "msg_err_insufficientBal",
         "msg_err_invalidPassword",
         "msg_err_invalidCpf",
-        "msg_err_invalidNameSurname"
+        "msg_err_invalidNameSurname",
+        "msg_err_userAlreadyExists",
+        "msg_err_contaAlreadyExists"
     ]
 
 msg_success = {"code": 0, "message": "Success"}
@@ -21,3 +23,5 @@ msg_err_insufficientBal = {"code": 6, "message": "Insufficient balance"}
 msg_err_invalidPassword = {"code": 7, "message": "Invalid password"}
 msg_err_invalidCpf = {"code": 8, "message": "Invalid cpf"}
 msg_err_invalidNameSurname = {"code": 9, "message": "Invalid name/surname"}
+msg_err_userAlreadyExists = {"code": 10, "message": "User already exists"}
+msg_err_contaAlreadyExists = {"code": 11, "message": "Conta already exists"}

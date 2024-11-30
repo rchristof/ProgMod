@@ -38,10 +38,16 @@ def createNewUser(name, surname, cpf, password):
 
     if is_valid_password(password) == False:
         return msg_err_invalidPassword
+    
+    for user in users:
+        if user["cpf"] == cpf :
+            return msg_err_userAlreadyExists
 
     users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
 
-    createNewConta(cpf)
+    resultCreateNewConta = createNewConta(cpf)
+    if resultCreateNewConta != msg_success:
+        return resultCreateNewConta
 
     return msg_success
 
