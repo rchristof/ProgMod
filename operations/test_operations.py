@@ -17,13 +17,13 @@ class TestOperations(unittest.TestCase):
         print("Test Case 01 - Make Deposit with success")
         createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
         login(userTest["cpf"], userTest["password"])
-        ret_val = makeDeposit(userTest["cpf"], getIBAN(userTest["cpf"]), validVal)
+        ret_val = makeDeposit(userTest["cpf"], getConta(userTest["cpf"])["IBAN"], validVal)
         self.assertEqual(ret_val, msg_success)
 
     def test_02_makeDeposit_user_not_logged_in(self):
         print("Test Case 02 - Make Deposit when user is not logged in")
         logout(userTest["cpf"])
-        ret_val = makeDeposit(userTest["cpf"], getIBAN(userTest["cpf"]), validVal)
+        ret_val = makeDeposit(userTest["cpf"], getConta(userTest["cpf"])["IBAN"], validVal)
         self.assertEqual(ret_val, msg_err_userNotLoggedIn)
 
     def test_03_makeDeposit_invalid_iban(self):
@@ -39,50 +39,50 @@ class TestOperations(unittest.TestCase):
 
     def test_05_makeDeposit_invalid_value(self):
         print("Test Case 05 - Make Deposit with invalid value")
-        ret_val = makeDeposit(userTest["cpf"], getIBAN(userTest["cpf"]), invalidVal)
+        ret_val = makeDeposit(userTest["cpf"], getConta(userTest["cpf"])["IBAN"], invalidVal)
         self.assertEqual(ret_val, msg_err_invalidVal)
 
     def test_06_makeTransfer_success(self):
         print("Test Case 06 - Make Transfer with success")
         createNewUser(userTest2["name"], userTest2["surname"], userTest2["cpf"], userTest2["password"])
-        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getIBAN(userTest["cpf"]), getIBAN(userTest2["cpf"]), 50)
+        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], 50)
         self.assertEqual(ret_val, msg_success)
 
     def test_07_makeTransfer_user_not_logged_in(self):
         print("Test Case 07 - Make Transfer when user is not logged in")
         logout(userTest["cpf"])
-        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getIBAN(userTest["cpf"]), getIBAN(userTest2["cpf"]), 50)
+        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], 50)
         self.assertEqual(ret_val, msg_err_userNotLoggedIn)
 
     def test_08_makeTransfer_invalid_destCPF(self):
         print("Test Case 08 - Make Transfer with invalid destination CPF")
         login(userTest["cpf"], userTest["password"])
-        ret_val = makeTransfer(userTest["cpf"], "fake_value", getIBAN(userTest["cpf"]), getIBAN(userTest2["cpf"]), 50)
+        ret_val = makeTransfer(userTest["cpf"], "fake_value", getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], 50)
         self.assertEqual(ret_val, msg_err_invalidCpf)
 
     def test_09_makeTransfer_same_source_dest_CPF(self):
         print("Test Case 09 - Make Transfer with same source and destination CPF")
-        ret_val = makeTransfer(userTest["cpf"], userTest["cpf"], getIBAN(userTest["cpf"]), getIBAN(userTest2["cpf"]), 50)
+        ret_val = makeTransfer(userTest["cpf"], userTest["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], 50)
         self.assertEqual(ret_val, msg_err_invalidCpf)
 
     def test_10_makeTransfer_invalid_source_IBAN(self):
         print("Test Case 10 - Make Transfer with invalid source IBAN")
-        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], "invalid_iban", getIBAN(userTest2["cpf"]), 50)
+        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], "invalid_iban", getConta(userTest2["cpf"])["IBAN"], 50)
         self.assertEqual(ret_val, msg_err_invalidIban)
 
     def test_11_makeTransfer_same_IBANs(self):
         print("Test Case 11 - Make Transfer with same source and destination IBAN")
-        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getIBAN(userTest["cpf"]), getIBAN(userTest["cpf"]), 50)
+        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest["cpf"])["IBAN"], 50)
         self.assertEqual(ret_val, msg_err_invalidIban)
 
     def test_12_makeTransfer_insufficient_balance(self):
         print("Test Case 12 - Make Transfer with insufficient balance")
-        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getIBAN(userTest["cpf"]), getIBAN(userTest2["cpf"]), 70)
+        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], 70)
         self.assertEqual(ret_val, msg_err_insufficientBal)
 
     def test_13_makeTransfer_invalid_value(self):
         print("Test Case 13 - Make Transfer with invalid value")
-        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getIBAN(userTest["cpf"]), getIBAN(userTest2["cpf"]), "invalid_val")
+        ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], "invalid_val")
         self.assertEqual(ret_val, msg_err_invalidVal)
 
 unittest.main()
