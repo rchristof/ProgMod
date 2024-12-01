@@ -156,7 +156,7 @@ class TestUser(unittest.TestCase):
         resultGetConta = getConta(userTest["cpf"])
         self.assertEqual(
             ret_val,
-            {"Name": userTest["name"], "Surname": userTest["surname"], "CPF": userTest["cpf"], "IBAN": resultGetConta["IBAN"], "Balance": resultGetConta["balance"]}
+            {"Name": userTest["name"], "Surname": userTest["surname"], "CPF": userTest["cpf"], "IBAN": resultGetConta["IBAN"], "Password": userTest["password"], "Balance": resultGetConta["balance"]}
         )
 
     def test_27_getAccountInfo_nok_invalid_cpf(self):
