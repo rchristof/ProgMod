@@ -69,27 +69,31 @@ def createNewUser(name, surname, cpf, password):
     """
     from conta import createNewConta
 
-    if is_valid_name_or_surname(name) == False:
-        return msg_err_invalidNameSurname
-    if is_valid_name_or_surname(surname) == False:
+    if is_valid_name_or_surname(name) == False or is_valid_name_or_surname(surname) == False:
+        print("Error: " + msg_err_invalidNameSurname["message"])
         return msg_err_invalidNameSurname
     
     if len(cpf) != 11 or cpf.isdigit() == False:
+        print("Error: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
     if is_valid_password(password) == False:
+        print("Error: " + msg_err_invalidPassword["message"])
         return msg_err_invalidPassword
     
     for user in users:
-        if user["cpf"] == cpf :
+        if user["cpf"] == cpf:
+            print("Error: " + msg_err_userAlreadyExists["message"])
             return msg_err_userAlreadyExists
 
     users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
 
     resultCreateNewConta = createNewConta(cpf)
     if resultCreateNewConta != msg_success:
+        print("Error: " + resultCreateNewConta["message"])
         return resultCreateNewConta
 
+    print("Successful user and conta creation")
     return msg_success
 
 
@@ -113,26 +117,32 @@ def login(cpf, password):
         so the function caller can't know which one triggered the error
     """
     if len(cpf) != 11 or cpf.isdigit() == False:
+        print("Error: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
     for user in users:
         if user["cpf"] == cpf and user["password"] == password:
             global loggedUserCPF
             loggedUserCPF = cpf
+            print("Successful login")
             return msg_success
         
+    print("Error: " + msg_err_userNotExists["message"])
     return msg_err_userNotExists
 
 
 def logout(cpf):
     if len(cpf) != 11 or cpf.isdigit() == False:
+        print("Error: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
     global loggedUserCPF
     if loggedUserCPF != cpf:
+        print("Error: " + msg_err_userNotLoggedIn["message"])
         return msg_err_userNotLoggedIn
     
     loggedUserCPF = None
+    print("Successful logout")
     return msg_success
 
 
