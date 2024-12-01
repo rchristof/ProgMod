@@ -22,7 +22,7 @@ def setTransactions(transactions):
     _transactions.extend(transactions)
 
 
-def loadTransactionsFromFile(file_path="transactions.txt"):
+def loadTransactionsFromFile(file_path="_database/transactions/transactions.txt"):
     """Lê as transações de um arquivo e preenche a lista."""
     try:
         with open(file_path, "r") as file:
@@ -36,7 +36,7 @@ def loadTransactionsFromFile(file_path="transactions.txt"):
         setTransactions([])
 
 
-def saveTransactionsToFile(file_path="transactions.txt"):
+def saveTransactionsToFile(file_path="_database/transactions/transactions.txt"):
     """Sobrescreve o arquivo com as transações atuais da lista."""
     with open(file_path, "w") as file:
         json.dump(getTransactions(), file, indent=4)  # Obtém a lista atual
