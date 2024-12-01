@@ -1,5 +1,6 @@
 import unittest
 from user import *
+from conta import getConta
 from return_messages import *
 
 userTest = {"name": "Mario", "surname": "Rossi", "cpf": "12345678910", "password": "mariorossi1234"}
@@ -148,5 +149,29 @@ class TestUser(unittest.TestCase):
         ret_val = verifyExistenceUser("02345678910")
         self.assertEqual(ret_val, msg_err_userNotExists)
 
+
+    def test_26_getAccountInfo_ok(self):
+        print("Test Case 26 - getAccountInfo, user existing")
+        ret_val = getAccountInfo(userTest["cpf"])
+        resultGetConta = getConta(userTest["cpf"])
+        self.assertEqual(
+            ret_val,
+            {"Name": userTest["name"], "Surname": userTest["surname"], "CPF": userTest["cpf"], "IBAN": resultGetConta["IBAN"], "Balance": resultGetConta["balance"]}
+        )
+
+    def test_27_getAccountInfo_nok_invalid_cpf(self):
+        print("Test Case 27 - getAccountInfo, CPF invalid")
+        ret_val = getAccountInfo("1234")
+        self.assertEqual(ret_val, msg_err_invalidCpf)
+
+    def test_28_getAccountInfo_nok_user_not_existing(self):
+        print("Test Case 28 - getAccountInfo, user not existing")
+        ret_val = getAccountInfo("02345678910")
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    def test_29_getAccountInfo_nok_user_not_logged(self):
+        print("Test Case 29 - getAccountInfo, user not logged in")
+        ret_val = getAccountInfo(userTest2["cpf"])
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
 
 unittest.main()
