@@ -45,6 +45,28 @@ def is_valid_password(password):
 
 
 def createNewUser(name, surname, cpf, password):
+    """
+        Description: implements Account Creation requirements\n
+        Coupling:\n
+            Input parameters:
+                name -> user’s first name (a not empty string with at most 50 chars, which can only contain alphabetic chars, spaces, "'" and "-")
+                surname -> user’s last name (same format of name)
+                cpf -> user’s CPF (a string with exactly 11 digits)
+                password -> user’s password (a string with at least 4 chars and at most 50 chars)
+            Output values:
+                msg_err_invalidNameSurname -> if name and/or surname are not valid
+                msg_err_invalidCpf -> if CPF is not valid
+                msg_err_invalidPassword -> if CPF is not valid
+                msg_err_userAlreadyExists -> if a user with the given CPF already exists
+                msg_err_contaAlreadyExists -> if a conta with the given CPF already exists
+                msg_success -> if the user and the conta are created correctly
+        Coupling Conditions:\n
+            entry assertion: none
+            exit assertion:
+                msg_success -> the user and the conta are saved in memory
+                msg_err_contaAlreadyExists -> just the user is saved in memory
+                other cases -> none
+    """
     from conta import createNewConta
 
     if is_valid_name_or_surname(name) == False:
@@ -72,6 +94,24 @@ def createNewUser(name, surname, cpf, password):
 
 
 def login(cpf, password):
+    """
+        Description: implements Login requirement\n
+        Coupling:\n
+            Input parameters:
+                cpf -> user’s CPF (a string with exactly 11 digits)
+                password -> user’s password (a string with at least 4 chars and at most 50 chars)
+            Output values:
+                msg_err_invalidCpf -> if CPF is not valid
+                msg_err_userNotExists -> if a user with the given CPF and password doesn’t exist
+                msg_success -> if the user has been logged in with success
+        Coupling Conditions:\n
+            entry assertion: none
+            exit assertion:
+                msg_success -> user’s CPF is saved in memory as the current logged one, eventually overriding the previous one
+                other cases -> none
+        Restrictions: the cases of a) password not valid, b) cpf existing but wrong password and c) cpf not existing are all grouped in the same error message output value,
+        so the function caller can't know which one triggered the error
+    """
     if len(cpf) != 11 or cpf.isdigit() == False:
         return msg_err_invalidCpf
 
