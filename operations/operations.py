@@ -42,6 +42,26 @@ def saveTransactionsToFile(file_path="transactions.txt"):
 
 
 def makeDeposit(CPF, IBAN, val):
+    """
+        Description: Implements Deposit functionality.\n
+        Coupling:\n
+            Input parameters:
+                CPF -> User's CPF (a string with exactly 11 digits)
+                IBAN -> Account IBAN (a string with exactly 8 digits)
+                val -> Deposit value (a positive integer or float)
+            Output values:
+                msg_err_userNotLoggedIn -> If the user is not logged in
+                msg_err_invalidIban -> If the IBAN format is invalid
+                msg_err_contaNotExists -> If the account does not exist
+                msg_err_invalidVal -> If the deposit value is invalid (e.g., negative or zero)
+                msg_success -> If the deposit operation is successful
+        Coupling Conditions:\n
+            Entry assertion: none
+            Exit assertion:
+                msg_success -> The account balance is updated and the transaction is recorded
+                Other cases -> No changes to the account balance or transactions
+    """
+
     # Verifica se o usuário está logado
     resultIsLoggedIn = isLoggedIn(CPF)
     if resultIsLoggedIn != msg_success:
@@ -76,6 +96,29 @@ def makeDeposit(CPF, IBAN, val):
     return msg_success
 
 def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
+    """
+        Description: Implements Transfer functionality between two accounts.\n
+        Coupling:\n
+            Input parameters:
+                sourceCPF -> Source user's CPF (a string with exactly 11 digits)
+                destCPF -> Destination user's CPF (a string with exactly 11 digits)
+                sourceIBAN -> Source account IBAN (a string with exactly 8 digits)
+                destIBAN -> Destination account IBAN (a string with exactly 8 digits)
+                val -> Transfer value (a positive integer or float)
+            Output values:
+                msg_err_userNotLoggedIn -> If the source user is not logged in
+                msg_err_invalidCpf -> If the source or destination CPF is invalid, or if the source and destination CPFs are the same
+                msg_err_invalidIban -> If the source or destination IBAN is invalid, or if the source and destination IBANs are the same
+                msg_err_invalidVal -> If the transfer value is invalid (e.g., negative or zero)
+                msg_err_contaNotExists -> If the source or destination account does not exist
+                msg_err_insufficientBalance -> If the source account has insufficient balance
+                msg_success -> If the transfer operation is successful
+        Coupling Conditions:\n
+            Entry assertion: none
+            Exit assertion:
+                msg_success -> The source account balance is reduced, the destination account balance is increased, and the transaction is recorded
+                Other cases -> No changes to the account balances or transactions
+    """
     
     # Verifica se o usuário está logado
     resultIsLoggedIn = isLoggedIn(sourceCPF)
