@@ -45,34 +45,34 @@ def makeDeposit(CPF, IBAN, val):
     # Verifica se o usuário está logado
     resultIsLoggedIn = isLoggedIn(CPF)
     if resultIsLoggedIn != msg_success:
-        print("Operation denied: user is not logged in")
+        print("Operation denied: " + resultIsLoggedIn["message"])
         return resultIsLoggedIn
 
     # Verifica se o formato do IBAN é válido
     if (isinstance(IBAN, str) == False) or ((len(IBAN) == 8) == False) or (IBAN.isdigit() == False):
-        print("Operation denied: invalid IBAN format")
-        return msg_err_invalidIbanFormat  # Invalid IBAN format
+        print("Operation denied: " + msg_err_invalidIban["message"])
+        return msg_err_invalidIban  # Invalid IBAN format
 
     # Verifica se a conta existe
     resultVerifyExistenceConta = verifyExistenceConta(CPF, IBAN)
     if resultVerifyExistenceConta != msg_success:
-        print("Operation denied: account does not exist")
+        print("Operation denied: " + resultVerifyExistenceConta["message"])
         return resultVerifyExistenceConta
     
     # Verifica se o valor é válido
     if (isinstance(val, (int, float)) == False) or val <= 0:
-        print("Operation denied: invalid amount format")
+        print("Operation denied: " + msg_err_invalidVal["message"])
         return msg_err_invalidVal
 
     # Atualiza o saldo da conta
     update_result = updateBalance(CPF, IBAN, val)
     if update_result != msg_success:
-        print("Operation denied: insufficient balance")
+        print("Error on balance updating: " + update_result["message"])
         return update_result  # Retorna erro da função updateBalance
 
     # Transação registrada
     updateTransactions(IBAN, IBAN, val)  # sourceIBAN = destIBAN indica depósito
-    print("Deposit successful")
+    print("Successful deposit")
     return msg_success
 
 def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
@@ -80,56 +80,69 @@ def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
     # Verifica se o usuário está logado
     resultIsLoggedIn = isLoggedIn(sourceCPF)
     if resultIsLoggedIn != msg_success:
+        print("Operation denied: " + resultIsLoggedIn["message"])
         return resultIsLoggedIn
 
     # Verifica se o destCPF é valido
     if len(destCPF) != 11 or destCPF.isdigit() == False:
+        print("Operation denied: " + msg_err_invalidCpf["message"] + " (destination)")
         return msg_err_invalidCpf
 
     # Verifica se os CPF sao eguals
     if sourceCPF == destCPF:
+        print("Operation denied: The source and destination CPFs are the same")
         return msg_err_invalidCpf
 
     # Verifica se o formato do sourceIBAN é válido
     if (isinstance(sourceIBAN, str) == False) or ((len(sourceIBAN) == 8) == False) or (sourceIBAN.isdigit() == False):
+        print("Operation denied: " + msg_err_invalidIban["message"] + " (source IBAN)")
         return msg_err_invalidIban  # Invalid sourceIBAN format
     # Verifica se o formato do destIBAN é válido
     if (isinstance(destIBAN, str) == False) or ((len(destIBAN) == 8) == False) or (destIBAN.isdigit() == False):
+        print("Operation denied: " + msg_err_invalidIban["message"] + " (destination IBAN)")
         return msg_err_invalidIban  # Invalid destIBAN format
     
     # Verifica se os CPF sao eguals
     if sourceIBAN == destIBAN:
+        print("Operation denied: The source and destination IBANs are the same")
         return msg_err_invalidIban
 
     # Verifica se o valor é válido
     if (isinstance(val, (int, float)) == False) or val <= 0:
+        print("Operation denied: " + msg_err_invalidVal["message"])
         return msg_err_invalidVal
 
     # Verifica se as contas existem
     resultVerifyExistenceConta = verifyExistenceConta(sourceCPF, sourceIBAN)
     if resultVerifyExistenceConta != msg_success:
+        print("Operation denied: " + resultVerifyExistenceConta["message"] + " (source)")
         return resultVerifyExistenceConta
 
     resultVerifyExistenceConta = verifyExistenceConta(destCPF, destIBAN)
     if resultVerifyExistenceConta != msg_success:
+        print("Operation denied: " + resultVerifyExistenceConta["message"] + " (destination)")
         return resultVerifyExistenceConta
 
     # Verifica se o saldo é suficiente
     resultVerifyBalance = verifyBalance(sourceCPF, sourceIBAN, val)
     if resultVerifyBalance != msg_success:
+        print("Operation denied: " + resultVerifyBalance["message"])
         return resultVerifyBalance
 
     # Atualiza o saldo das contas
     withdraw_result = updateBalance(sourceCPF, sourceIBAN, -val)
     if withdraw_result != msg_success:
+        print("Error on balance updating: " + withdraw_result["message"])
         return withdraw_result  # Retorna erro da função updateBalance
 
     deposit_result = updateBalance(destCPF, destIBAN, val)
     if deposit_result != msg_success:
+        print("Error on balance updating: " + deposit_result["message"])
         return deposit_result  # Retorna erro da função updateBalance
 
     # Transação registrada
     updateTransactions(sourceIBAN, destIBAN, val)  # sourceIBAN != destIBAN indica transferência
+    print("Successful transfer")
     return msg_success
 
 def generateReport(CPF, IBAN):
