@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     const char *arquivo_entrada_path = argv[1];
 
     char arquivo_saida_path[256];
-    snprintf(arquivo_saida_path, sizeof(arquivo_saida_path), "%s", arquivo_entrada_path);
+    snprintf(arquivo_saida_path, sizeof(arquivo_saida_path), "_database/reports/%s", arquivo_entrada_path);
     char *ext = strstr(arquivo_saida_path, "_utf32");
     if (ext) {
         strcpy(ext, "_utf8.pdf");
