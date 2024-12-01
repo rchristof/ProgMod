@@ -176,25 +176,3 @@ def verifyBalance(CPF, IBAN, val):
             return msg_err_insufficientBal  # Insufficient balance
 
     return msg_err_contaNotExists   # Conta not exists
-
-def getIBAN(cpf):
-    """
-        Description: Retrieves the IBAN for a user associated with the given CPF (function only used during tests).\n
-        Coupling:\n
-            Input parameters:
-                cpf -> the user’s CPF (a string with exactly 11 digits)
-            Output values:
-                IBAN -> the IBAN associated with the given CPF
-                msg_err_contaNotExists -> if no account exists for the given CPF
-        Coupling Conditions:\n
-            Entry assertion:
-                cpf must be a valid string with exactly 11 numeric digits
-            Exit assertion:
-                IBAN -> returned if the account exists for the given CPF
-                msg_err_contaNotExists -> returned if no matching account is found
-        Restrictions: assumes that the variable 'contas' is a list of dictionaries where each dictionary represents an account with a 'CPF' field.
-    """
-    for conta in contas:
-        if conta['CPF'] == cpf:
-            return conta['IBAN']
-    return msg_err_contaNotExists  # Conta not exists
