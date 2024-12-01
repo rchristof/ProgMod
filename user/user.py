@@ -1,11 +1,30 @@
 import re
 from return_messages import *
 
-__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser"]
+__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser", "getAccountInfo"]
 
 loggedUserCPF = None
 users = []
 
+
+def getAccountInfo(cpf):
+    if len(cpf) != 11 or cpf.isdigit() == False:
+        return msg_err_invalidCpf
+
+    # Verifica se o usuário está logado
+    resultIsLoggedIn = isLoggedIn(cpf)
+    if resultIsLoggedIn != msg_success:
+        return resultIsLoggedIn
+
+    for user in users:
+        if user["cpf"] == cpf:
+            from conta import getConta
+            resultGetConta = getConta(cpf)
+            if resultGetConta == msg_err_contaNotExists:
+                return resultGetConta
+
+            return {"Name": user["name"], "Surname": user["surname"], "CPF": user["cpf"], "IBAN": resultGetConta["IBAN"], "Balance": resultGetConta["balance"]}
+    return msg_err_userNotExists
 
 def is_valid_name_or_surname(name):
     if not isinstance(name, str):

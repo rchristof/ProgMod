@@ -2,9 +2,15 @@ from user import *
 from return_messages import *
 import random
 
-__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance"]
+__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta"]
 
 contas = []
+
+def getConta(CPF):
+    for conta in contas:
+        if conta['CPF'] == CPF:
+            return conta
+    return msg_err_contaNotExists  # Conta not exists
 
 def verifyFormatIban(IBAN):
     if isinstance(IBAN, str) and len(IBAN) == 8 and IBAN.isdigit():

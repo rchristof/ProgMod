@@ -40,61 +40,39 @@ def saveTransactionsToFile(file_path="transactions.txt"):
     with open(file_path, "w") as file:
         json.dump(getTransactions(), file, indent=4)  # Obtém a lista atual
 
-'''
-##### Functions for testing the code #####
-
-def getTransactions():
-    return transactions
-
-loggedUserCPF = "12345678901"
-
-def isLoggedIn(cpf):
-    if len(cpf) != 11 or cpf.isdigit() == False:
-        return msg_err_invalidCpf
-    if loggedUserCPF == cpf:
-        return msg_success
-    else:
-        return msg_err_userNotLoggedIn
-
-def verifyExistenceConta(cpf, iban):
-    return msg_success
-
-def updateBalance(cpf, iban, val):
-    return msg_success
-
-def verifyBalance(cpf, iban, val):
-    return msg_success
-
-############################################
-'''
-
 
 def makeDeposit(CPF, IBAN, val):
     # Verifica se o usuário está logado
     resultIsLoggedIn = isLoggedIn(CPF)
     if resultIsLoggedIn != msg_success:
+        print("Operation denied: user is not logged in")
         return resultIsLoggedIn
 
     # Verifica se o formato do IBAN é válido
     if (isinstance(IBAN, str) == False) or ((len(IBAN) == 8) == False) or (IBAN.isdigit() == False):
+        print("Operation denied: invalid IBAN format")
         return msg_err_invalidIbanFormat  # Invalid IBAN format
-    
+
     # Verifica se a conta existe
     resultVerifyExistenceConta = verifyExistenceConta(CPF, IBAN)
     if resultVerifyExistenceConta != msg_success:
+        print("Operation denied: account does not exist")
         return resultVerifyExistenceConta
-
+    
     # Verifica se o valor é válido
     if (isinstance(val, (int, float)) == False) or val <= 0:
+        print("Operation denied: invalid amount format")
         return msg_err_invalidVal
 
     # Atualiza o saldo da conta
     update_result = updateBalance(CPF, IBAN, val)
     if update_result != msg_success:
+        print("Operation denied: insufficient balance")
         return update_result  # Retorna erro da função updateBalance
 
     # Transação registrada
     updateTransactions(IBAN, IBAN, val)  # sourceIBAN = destIBAN indica depósito
+    print("Deposit successful")
     return msg_success
 
 def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
