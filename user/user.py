@@ -23,7 +23,7 @@ def getAccountInfo(cpf):
             if resultGetConta == msg_err_contaNotExists:
                 return resultGetConta
 
-            return {"Name": user["name"], "Surname": user["surname"], "CPF": user["cpf"], "IBAN": resultGetConta["IBAN"], "Balance": resultGetConta["balance"]}
+            return {"Name": user["name"], "Surname": user["surname"], "CPF": user["cpf"], "IBAN": resultGetConta["IBAN"], "Password": user["password"], "Balance": resultGetConta["balance"]}
     return msg_err_userNotExists
 
 def is_valid_name_or_surname(name):
@@ -70,30 +70,30 @@ def createNewUser(name, surname, cpf, password):
     from conta import createNewConta
 
     if is_valid_name_or_surname(name) == False or is_valid_name_or_surname(surname) == False:
-        print("Error: " + msg_err_invalidNameSurname["message"])
+        print("\nError: " + msg_err_invalidNameSurname["message"])
         return msg_err_invalidNameSurname
     
     if len(cpf) != 11 or cpf.isdigit() == False:
-        print("Error: " + msg_err_invalidCpf["message"])
+        print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
     if is_valid_password(password) == False:
-        print("Error: " + msg_err_invalidPassword["message"])
+        print("\nError: " + msg_err_invalidPassword["message"])
         return msg_err_invalidPassword
     
     for user in users:
         if user["cpf"] == cpf:
-            print("Error: " + msg_err_userAlreadyExists["message"])
+            print("\nError: " + msg_err_userAlreadyExists["message"])
             return msg_err_userAlreadyExists
 
     users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
 
     resultCreateNewConta = createNewConta(cpf)
     if resultCreateNewConta != msg_success:
-        print("Error: " + resultCreateNewConta["message"])
+        print("\nError: " + resultCreateNewConta["message"])
         return resultCreateNewConta
 
-    print("Successful user and conta creation")
+    print("\nSuccessful user and conta creation")
     return msg_success
 
 
@@ -117,32 +117,32 @@ def login(cpf, password):
         so the function caller can't know which one triggered the error
     """
     if len(cpf) != 11 or cpf.isdigit() == False:
-        print("Error: " + msg_err_invalidCpf["message"])
+        print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
     for user in users:
         if user["cpf"] == cpf and user["password"] == password:
             global loggedUserCPF
             loggedUserCPF = cpf
-            print("Successful login")
+            print("\nSuccessful login")
             return msg_success
         
-    print("Error: " + msg_err_userNotExists["message"])
+    print("\nError: " + msg_err_userNotExists["message"] + " (wrong CPF and/or password) ")
     return msg_err_userNotExists
 
 
 def logout(cpf):
     if len(cpf) != 11 or cpf.isdigit() == False:
-        print("Error: " + msg_err_invalidCpf["message"])
+        print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
     global loggedUserCPF
     if loggedUserCPF != cpf:
-        print("Error: " + msg_err_userNotLoggedIn["message"])
+        print("\nError: " + msg_err_userNotLoggedIn["message"])
         return msg_err_userNotLoggedIn
     
     loggedUserCPF = None
-    print("Successful logout")
+    print("\nSuccessful logout")
     return msg_success
 
 
