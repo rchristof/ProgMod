@@ -85,6 +85,11 @@ class TestOperations(unittest.TestCase):
         ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], "invalid_val")
         self.assertEqual(ret_val, msg_err_invalidVal)
 
+    def test_14_generateReport_success(self):
+        print("Test Case 14 - Generate Report with success")
+        ret_val = generateReport(userTest["cpf"], getConta(userTest["cpf"])["IBAN"])
+        self.assertEqual(ret_val, None)
+
 unittest.main()
 
 '''
