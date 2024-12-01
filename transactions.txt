@@ -1,26 +1,14 @@
 [
     {
-        "sourceIBAN": "IBAN123",
-        "destIBAN": "IBAN123",
-        "amount": 100.0,
-        "date": "2024-11-29 16:10:43"
+        "sourceIBAN": "73792717",
+        "destIBAN": "73792717",
+        "amount": 100,
+        "date": "2024-12-01 20:05:30"
     },
     {
-        "sourceIBAN": "IBAN123",
-        "destIBAN": "IBAN456",
-        "amount": 50.0,
-        "date": "2024-11-29 16:10:43"
-    },
-    {
-        "sourceIBAN": "IBAN123",
-        "destIBAN": "IBAN123",
-        "amount": 100.0,
-        "date": "2024-11-29 16:10:55"
-    },
-    {
-        "sourceIBAN": "IBAN123",
-        "destIBAN": "IBAN456",
-        "amount": 50.0,
-        "date": "2024-11-29 16:10:55"
+        "sourceIBAN": "73792717",
+        "destIBAN": "89866253",
+        "amount": 50,
+        "date": "2024-12-01 20:05:30"
     }
 ]

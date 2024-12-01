@@ -90,6 +90,11 @@ class TestOperations(unittest.TestCase):
         ret_val = generateReport(userTest["cpf"], getConta(userTest["cpf"])["IBAN"])
         self.assertEqual(ret_val, None)
 
+    def test_15_saveTransactionsToFile(self):
+        print("Test Case 15 - Save Transactions To File")
+        ret_val = saveTransactionsToFile()
+        self.assertEqual(ret_val, None)
+
 unittest.main()
 
 '''

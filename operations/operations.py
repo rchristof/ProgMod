@@ -7,7 +7,7 @@ import json
 import os
 from return_messages import *
 
-__all__ = ["makeDeposit", "makeTransfer", "generateReport"]
+__all__ = ["makeDeposit", "makeTransfer", "generateReport", "loadTransactionsFromFile", "saveTransactionsToFile", "getTransactions"]
 
 _transactions = []
 
