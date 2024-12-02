@@ -23,7 +23,6 @@ def main_menu():
                 result = user_login()
                 if result != None:
                     cpf = result
-                    operations.loadTransactionsFromFile(cpf)
                     menu_logged_user(cpf)
 
             elif choice == 3:
@@ -37,6 +36,7 @@ def main_menu():
             print("\nInvalid input. Please enter a valid number.")
 
 def menu_logged_user(cpf):
+    operations.loadTransactionsFromFile(cpf)
     name = user.getAccountInfo(cpf)["Name"]
     print(f"\n\nWelcome {name}!")
 
