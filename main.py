@@ -4,7 +4,7 @@ import operations
 import return_messages
 
 def main_menu():
-
+    user.loadUsersFromFile()
     while True:
         # Principal menu
         print("\n\n===== Main Menu =====")
@@ -23,6 +23,7 @@ def main_menu():
                 result = user_login()
                 if result != None:
                     cpf = result
+                    operations.loadTransactionsFromFile(cpf)
                     menu_logged_user(cpf)
 
             elif choice == 3:
@@ -60,6 +61,8 @@ def menu_logged_user(cpf):
                 print("todo")
             elif choice == 5:
                 user.logout(cpf)
+                operations.saveTransactionsToFile(cpf)
+                user.saveUsersToFile(cpf)
                 break
             else:
                 print("\nInvalid choice. Please enter a number between 1 and 5.")
@@ -99,6 +102,7 @@ def user_create_user():
     password = input("Insert your password (at least 4 char): ")
 
     result = user.createNewUser(name, surname, cpf, password)
+    user.saveUsersToFile()
     if(result != return_messages.msg_success):
         print("Account not created")
 

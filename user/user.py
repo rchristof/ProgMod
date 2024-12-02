@@ -1,11 +1,43 @@
 import re
 from return_messages import *
+import json
+import os
 
-__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser", "getAccountInfo"]
+__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser", "getAccountInfo", "loadUsersFromFile", "saveUsersToFile", "getUsers", "setUsers"]
 
 loggedUserCPF = None
-users = []
+_users = []
 
+# Gerenciamento de transações
+def getUsers():
+    """Retorna uma cópia da lista de transações."""
+    return _users.copy()
+
+
+def setUsers(transactions):
+    """Substitui a lista de transações."""
+    _users.clear()
+    _users.extend(transactions)
+
+
+def loadUsersFromFile(file_path="_database/users/_users.txt"):
+    """Lê as transações de um arquivo e preenche a lista."""
+    try:
+        with open(file_path, "r") as file:
+            transactions = json.load(file)
+            setUsers(transactions)  # Atualiza a lista de transações
+    except FileNotFoundError:
+        print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
+        setUsers([])  # Inicializa a lista como vazia
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
+        setUsers([])
+
+
+def saveUsersToFile(file_path="_database/users/_users.txt"):
+    """Sobrescreve o arquivo com as transações atuais da lista."""
+    with open(file_path, "w") as file:
+        json.dump(getUsers(), file, indent=4)  # Obtém a lista atual
 
 def getAccountInfo(cpf):
     if len(cpf) != 11 or cpf.isdigit() == False:
@@ -16,7 +48,7 @@ def getAccountInfo(cpf):
     if resultIsLoggedIn != msg_success:
         return resultIsLoggedIn
 
-    for user in users:
+    for user in _users:
         if user["cpf"] == cpf:
             from conta import getConta
             resultGetConta = getConta(cpf)
@@ -81,12 +113,12 @@ def createNewUser(name, surname, cpf, password):
         print("\nError: " + msg_err_invalidPassword["message"])
         return msg_err_invalidPassword
     
-    for user in users:
+    for user in _users:
         if user["cpf"] == cpf:
             print("\nError: " + msg_err_userAlreadyExists["message"])
             return msg_err_userAlreadyExists
 
-    users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
+    _users.append({"name": name, "surname": surname, "cpf": cpf, "password": password})
 
     resultCreateNewConta = createNewConta(cpf)
     if resultCreateNewConta != msg_success:
@@ -120,7 +152,7 @@ def login(cpf, password):
         print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
-    for user in users:
+    for user in _users:
         if user["cpf"] == cpf and user["password"] == password:
             global loggedUserCPF
             loggedUserCPF = cpf
@@ -160,7 +192,7 @@ def verifyExistenceUser(cpf):
     if len(cpf) != 11 or cpf.isdigit() == False:
         return msg_err_invalidCpf
     
-    for user in users:
+    for user in _users:
         if user["cpf"] == cpf :
             return msg_success
 

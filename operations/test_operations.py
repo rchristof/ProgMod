@@ -13,6 +13,7 @@ invalidVal = -100
 validVal = 100
 
 class TestOperations(unittest.TestCase):
+
     def test_01_makeDeposit_success(self):
         print("Test Case 01 - Make Deposit with success")
         createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
@@ -85,15 +86,31 @@ class TestOperations(unittest.TestCase):
         ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], "invalid_val")
         self.assertEqual(ret_val, msg_err_invalidVal)
 
+    """APAGAR ESSES TESTES DEPOIS"""
     def test_14_generateReport_success(self):
         print("Test Case 14 - Generate Report with success")
         ret_val = generateReport(userTest["cpf"], getConta(userTest["cpf"])["IBAN"])
         self.assertEqual(ret_val, None)
 
-    def test_15_saveTransactionsToFile(self):
-        print("Test Case 15 - Save Transactions To File")
-        ret_val = saveTransactionsToFile()
+    def test_15_saveTransactionsToFile_success(self):
+        print("Test Case 15 - Save Transactions To File with success")
+        ret_val = saveTransactionsToFile(userTest["cpf"])
         self.assertEqual(ret_val, None)
+
+        setTransactions([]) #apagar
+        ret_val = getTransactions()
+        print(ret_val)
+
+    def test_16_loadTransactionsFromFile_success(self):
+        print("Test Case 16 - Load Transactions From File with success")
+        ret_val = loadTransactionsFromFile(userTest["cpf"])
+        self.assertEqual(ret_val, None)
+    
+    def test_17_getTransactions_success(self):
+        print("Test Case 17 - Get Transactions with success")
+        ret_val = getTransactions()
+        print(ret_val)
+
 
 unittest.main()
 
