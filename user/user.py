@@ -3,25 +3,25 @@ from return_messages import *
 import json
 import os
 
-__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser", "getAccountInfo", "loadUsersFromFile", "saveUsersToFile", "getUsers", "setUsers"]
+__all__ = ["createNewUser", "login", "logout", "isLoggedIn", "verifyExistenceUser", "getAccountInfo", "loadUsersFromFile", "saveUsersToFile"]
 
 loggedUserCPF = None
 _users = []
 
-# Gerenciamento de transações
+
 def getUsers():
-    """Retorna uma cópia da lista de transações."""
+    """Retorna uma cópia da lista de users."""
     return _users.copy()
 
 
 def setUsers(transactions):
-    """Substitui a lista de transações."""
+    """Substitui a lista de users."""
     _users.clear()
     _users.extend(transactions)
 
 
-def loadUsersFromFile(file_path="_database/users/_users.txt"):
-    """Lê as transações de um arquivo e preenche a lista."""
+def loadUsersFromFile(file_path="_database/_users/_users.txt"):
+    """Lê os users de um arquivo e preenche a lista."""
     try:
         with open(file_path, "r") as file:
             transactions = json.load(file)
@@ -34,8 +34,8 @@ def loadUsersFromFile(file_path="_database/users/_users.txt"):
         setUsers([])
 
 
-def saveUsersToFile(file_path="_database/users/_users.txt"):
-    """Sobrescreve o arquivo com as transações atuais da lista."""
+def saveUsersToFile(file_path="_database/_users/_users.txt"):
+    """Sobrescreve o arquivo com os users atuais da lista."""
     with open(file_path, "w") as file:
         json.dump(getUsers(), file, indent=4)  # Obtém a lista atual
 
