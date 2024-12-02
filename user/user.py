@@ -26,23 +26,6 @@ def getAccountInfo(cpf):
             return {"Name": user["name"], "Surname": user["surname"], "CPF": user["cpf"], "IBAN": resultGetConta["IBAN"], "Password": user["password"], "Balance": resultGetConta["balance"]}
     return msg_err_userNotExists
 
-def is_valid_name_or_surname(name):
-    if not isinstance(name, str):
-        return False
-    
-    # Regex per verificare che sia una stringa non vuota che può contenere solo caratteri alfabetici, spazi, apostrofi
-    # e trattini, di lunghezza massima 50 caratteri
-    pattern = r"^[a-zA-Z'’ -]{1,50}$"
-    return bool(re.match(pattern, name))
-
-def is_valid_password(password):
-    if not isinstance(password, str):
-        return False
-    
-    # Regex per verificare che sia una stringa di lunghezza minima 4 caratteri e massima 50
-    pattern = r"^.{4,50}$"
-    return bool(re.match(pattern, password))
-
 
 def createNewUser(name, surname, cpf, password):
     """
@@ -69,7 +52,11 @@ def createNewUser(name, surname, cpf, password):
     """
     from conta import createNewConta
 
-    if is_valid_name_or_surname(name) == False or is_valid_name_or_surname(surname) == False:
+    # Regex per verificare che sia una stringa non vuota che può contenere solo caratteri alfabetici, spazi, apostrofi
+    # e trattini, di lunghezza massima 50 caratteri
+    pattern = r"^[a-zA-Z'’ -]{1,50}$"
+    isValidNameOrSurn = isinstance(name, str) and isinstance(surname, str) and (bool(re.match(pattern, name)) and bool(re.match(pattern, surname)))
+    if not isValidNameOrSurn:
         print("\nError: " + msg_err_invalidNameSurname["message"])
         return msg_err_invalidNameSurname
     
@@ -77,7 +64,10 @@ def createNewUser(name, surname, cpf, password):
         print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
-    if is_valid_password(password) == False:
+    # Regex per verificare che sia una stringa di lunghezza minima 4 caratteri e massima 50
+    pattern = r"^.{4,50}$"
+    isValidPassword = isinstance(password, str) and bool(re.match(pattern, password))
+    if not isValidPassword:
         print("\nError: " + msg_err_invalidPassword["message"])
         return msg_err_invalidPassword
     
