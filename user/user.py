@@ -20,7 +20,7 @@ def setUsers(transactions):
     _users.extend(transactions)
 
 
-def loadUsersFromFile(file_path="_database/_users/_users.txt"):
+def loadUsersFromFile(file_path="database/users/_users.txt"):
     """Lê os users de um arquivo e preenche a lista."""
     try:
         with open(file_path, "r") as file:
@@ -34,7 +34,7 @@ def loadUsersFromFile(file_path="_database/_users/_users.txt"):
         setUsers([])
 
 
-def saveUsersToFile(file_path="_database/_users/_users.txt"):
+def saveUsersToFile(file_path="database/users/_users.txt"):
     """Sobrescreve o arquivo com os users atuais da lista."""
     with open(file_path, "w") as file:
         json.dump(getUsers(), file, indent=4)  # Obtém a lista atual

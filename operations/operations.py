@@ -22,7 +22,7 @@ def setTransactions(transactions):
     _transactions.extend(transactions)
 
 
-def loadTransactionsFromFile(CPF, file_path_template="_database/_transactions/transactions-{cpf}.txt"):
+def loadTransactionsFromFile(CPF, file_path_template="database/transactions/_transactions-{cpf}.txt"):
     """
     Lê as transações do arquivo correspondente ao CPF e preenche a lista.
     Se o arquivo não for encontrado, inicializa a lista vazia.
@@ -43,7 +43,7 @@ def loadTransactionsFromFile(CPF, file_path_template="_database/_transactions/tr
         print(f"Erro ao decodificar o arquivo {file_path}. Inicializando lista vazia.")
         setTransactions([])  # Inicializa a lista como vazia
 
-def saveTransactionsToFile(CPF, file_path_template="_database/_transactions/transactions-{cpf}.txt"):
+def saveTransactionsToFile(CPF, file_path_template="database/transactions/_transactions-{cpf}.txt"):
     """
     Sobrescreve o arquivo com as transações atuais da lista.
     O nome do arquivo é baseado no CPF.
