@@ -2,7 +2,7 @@ from user import *
 from return_messages import *
 import random
 
-__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta"]
+__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta", "verifyFormatIban"]
 
 contas = []
 
