@@ -64,6 +64,7 @@ def menu_logged_user(cpf):
                 user_money_transfer(cpf)
             elif choice == 4:
                 operations.generateReport(cpf, user.getAccountInfo(cpf)["IBAN"])
+                print("\nReport generated.")
             elif choice == 5:
                 user.logout(cpf)
                 break
