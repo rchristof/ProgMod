@@ -1,5 +1,3 @@
-report_*
 **/__pycache__/
 *.pyc
 *.pyo
-transactions.txt

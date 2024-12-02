@@ -1,10 +1,96 @@
 from user import *
 from return_messages import *
+import os
+import json
 import random
 
-__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta"]
+__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta", "loadContasFromFile", "saveContasToFile"]
 
-contas = []
+_contas = []
+
+def getContas():
+    """
+    Description: Retrieves a copy of the current accounts list.\n
+    Coupling:\n
+        Input parameters: none
+        Output values:
+            - A list of account dictionaries currently stored in memory.
+    Coupling Conditions:\n
+        Entry assertion: none
+        Exit assertion:
+            - A copy of the accounts list is returned without modifying the original list.
+    Restrictions: The returned list is independent of the original and modifications to it do not affect the global `_contas`.
+    """
+
+    return _contas.copy()
+
+
+def setContas(transactions):
+    """
+    Description: Replaces the current accounts list with a new one.\n
+    Coupling:\n
+        Input parameters:
+            - transactions -> A list of account dictionaries to replace the current list.
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The input must be a valid list of dictionaries formatted as accounts.
+        Exit assertion:
+            - The global `_contas` list is replaced with the provided one.
+    Restrictions: Assumes the provided list contains valid account dictionaries and does not validate its content.
+    """
+
+    _contas.clear()
+    _contas.extend(transactions)
+
+
+def loadContasFromFile():
+    """
+    Description: Loads accounts from a file into memory.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The file should exist at the predefined path and be formatted as a valid JSON list of accounts.
+        Exit assertion:
+            - The global `_contas` list is updated with the content of the file.
+            - If the file is missing or invalid, `_contas` is set to an empty list.
+    Restrictions:
+        - If the file is malformed (not a valid JSON), `_contas` is cleared.
+        - Assumes the file path is correctly defined as `database/contas/_contas.txt`.
+    """
+
+    file_path="database/contas/_contas.txt"
+    try:
+        with open(file_path, "r") as file:
+            transactions = json.load(file)
+            setContas(transactions)  # Atualiza a lista de transações
+    except FileNotFoundError:
+        setContas([])  # Inicializa a lista como vazia
+    except json.JSONDecodeError:
+        setContas([])
+
+
+def saveContasToFile():
+    """
+    Description: Saves the current accounts list to a file.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The global `_contas` list must be a valid list of account dictionaries.
+        Exit assertion:
+            - The contents of `_contas` are written to the predefined file path in JSON format.
+    Restrictions:
+        - The file path is predefined as `database/contas/_contas.txt`.
+        - Assumes the directory structure exists and is writable.
+    """
+
+    file_path="database/contas/_contas.txt"
+    with open(file_path, "w") as file:
+        json.dump(getContas(), file, indent=4)  # Obtém a lista atual
 
 def getConta(CPF):
     """
@@ -23,7 +109,7 @@ def getConta(CPF):
                 msg_err_contaNotExists -> returned if no matching account is found
         Restrictions: assumes that the global variable 'contas' is a list of dictionaries where each dictionary represents an account with a 'CPF' field.
     """
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF:
             return conta
     return msg_err_contaNotExists  # Conta not exists
@@ -76,7 +162,7 @@ def createNewConta(CPF):
 
     iban = str(random.randint(10000000, 99999999)) 
 
-    contas.append({"CPF": CPF, "IBAN": iban, "balance": 0})
+    _contas.append({"CPF": CPF, "IBAN": iban, "balance": 0})
 
     return msg_success  # Success
 
@@ -108,7 +194,7 @@ def updateBalance(CPF, IBAN, val):
     if not isinstance(val, (int, float)) or val == 0:
         return msg_err_invalidVal  # Invalid val
 
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF and conta['IBAN'] == IBAN:
             if conta['balance'] + val < 0:
                 return msg_err_insufficientBal  # Insufficient balance
@@ -138,7 +224,7 @@ def verifyExistenceConta(CPF, IBAN=None):
     if len(CPF) != 11 or CPF.isdigit() == False:
             return msg_err_invalidCpf
 
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF:
             if IBAN is None or conta['IBAN'] == IBAN:
                 return msg_success  # Success
@@ -169,7 +255,7 @@ def verifyBalance(CPF, IBAN, val):
         return msg_err_invalidVal  # Invalid val
 
     # Encontra a conta correspondente
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF and conta['IBAN'] == IBAN:
             if conta['balance'] >= val:
                 return msg_success  # Success

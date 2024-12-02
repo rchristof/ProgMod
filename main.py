@@ -1,10 +1,13 @@
 import sys  # Per chiudere l'applicazione in modo pulito
 import user
+import conta
 import operations
 import return_messages
 
 def main_menu():
-
+    user.loadUsersFromFile()
+    conta.loadContasFromFile()
+    operations.loadTransactionsFromFile()
     while True:
         # Principal menu
         print("\n\n===== Main Menu =====")
@@ -27,6 +30,9 @@ def main_menu():
 
             elif choice == 3:
                 print("\nExiting the application. Goodbye!\n")
+                conta.saveContasToFile()
+                user.saveUsersToFile()
+                operations.saveTransactionsToFile()
                 sys.exit(0)  
 
             else:
@@ -57,7 +63,7 @@ def menu_logged_user(cpf):
             elif choice == 3:
                 user_money_transfer(cpf)
             elif choice == 4:
-                print("todo")
+                operations.generateReport(cpf, user.getAccountInfo(cpf)["IBAN"])
             elif choice == 5:
                 user.logout(cpf)
                 break

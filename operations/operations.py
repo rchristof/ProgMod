@@ -7,40 +7,92 @@ import json
 import os
 from return_messages import *
 
-__all__ = ["makeDeposit", "makeTransfer", "generateReport", "loadTransactionsFromFile", "saveTransactionsToFile", "getTransactions"]
+__all__ = ["makeDeposit", "makeTransfer", "generateReport", "loadTransactionsFromFile", "saveTransactionsToFile"]
 
 _transactions = []
 
 def getTransactions():
-    """Retorna uma cópia da lista de transações."""
+    """
+    Description: Retrieves a copy of the current transactions list.\n
+    Coupling:\n
+        Input parameters: none
+        Output values:
+            - A list of transaction dictionaries currently stored in memory.
+    Coupling Conditions:\n
+        Entry assertion: none
+        Exit assertion:
+            - A copy of the transactions list is returned without modifying the original list.
+    Restrictions: The returned list is independent of the original and modifications to it do not affect the global `_transactions`.
+    """
     return _transactions.copy()
 
 
 def setTransactions(transactions):
-    """Substitui a lista de transações."""
+    """
+    Description: Replaces the current transactions list with a new one.\n
+    Coupling:\n
+        Input parameters:
+            - transactions -> A list of transaction dictionaries to replace the current list.
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The input must be a valid list of dictionaries formatted as transactions.
+        Exit assertion:
+            - The global `_transactions` list is replaced with the provided one.
+    Restrictions: Assumes the provided list contains valid transaction dictionaries and does not validate its content.
+    """
+
     _transactions.clear()
     _transactions.extend(transactions)
 
 
-def loadTransactionsFromFile(file_path="transactions.txt"):
-    """Lê as transações de um arquivo e preenche a lista."""
+def loadTransactionsFromFile():
+    """
+    Description: Loads transactions from a file into the memory.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The file should exist at the predefined path and be formatted as a valid JSON list of transactions.
+        Exit assertion:
+            - The global `_transactions` list is updated with the content of the file.
+            - If the file is missing or invalid, `_transactions` is set to an empty list.
+    Restrictions:
+        - If the file is malformed (not a valid JSON), `_transactions` is cleared.
+        - Assumes the file path is correctly defined as `database/transactions/_transactions.txt`.
+    """
+
+    file_path="database/transactions/_transactions.txt"
     try:
         with open(file_path, "r") as file:
             transactions = json.load(file)
             setTransactions(transactions)  # Atualiza a lista de transações
     except FileNotFoundError:
-        print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
         setTransactions([])  # Inicializa a lista como vazia
     except json.JSONDecodeError:
-        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
         setTransactions([])
 
 
-def saveTransactionsToFile(file_path="transactions.txt"):
-    """Sobrescreve o arquivo com as transações atuais da lista."""
+def saveTransactionsToFile():
+    """
+    Description: Saves the current transactions list to a file.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The global `_transactions` list must be a valid list of transaction dictionaries.
+        Exit assertion:
+            - The contents of `_transactions` are written to the predefined file path in JSON format.
+    Restrictions:
+        - The file path is predefined as `database/transactions/_transactions.txt`.
+        - Assumes the directory structure exists and is writable.
+    """
+
+    file_path="database/transactions/_transactions.txt"
     with open(file_path, "w") as file:
         json.dump(getTransactions(), file, indent=4)  # Obtém a lista atual
-
 
 def makeDeposit(CPF, IBAN, val):
     """
@@ -191,14 +243,52 @@ def makeTransfer(sourceCPF, destCPF, sourceIBAN, destIBAN, val):
 
 # Geração e conversão de relatórios
 def generateReport(CPF, IBAN):
-    """Gera um relatório de transações no formato PDF (UTF-32) e converte para UTF-8."""
-    # Filtra transações
+    """
+    Description: Generates a PDF report of transactions for a specific account and optionally converts it to UTF-8 format.\n
+    Coupling:\n
+        Input parameters:
+            - CPF -> The user's CPF (a string with exactly 11 digits).
+            - IBAN -> The account's IBAN (a string of exactly 8 numeric digits).
+        Output values:
+            - None if the report generation is successful.
+            - Error messages if any validation or operation fails.
+    Coupling Conditions:\n
+        Entry assertion:
+            - CPF and IBAN must be valid strings in their respective formats.
+            - The user must be logged in.
+            - The account corresponding to CPF and IBAN must exist.
+        Exit assertion:
+            - A PDF report is generated containing all transactions related to the IBAN.
+            - The file is saved with the naming format `report_{CPF}_{IBAN}_utf32.pdf`.
+            - If conversion to UTF-8 fails, no output is returned.
+    Restrictions:
+        - Requires access to the `FPDF` library and the UTF-32 to UTF-8 converter.
+        - Assumes the global `_transactions` list contains valid transaction data.
+    """
+
+
+    # Verifica se o usuário está logado
+    resultIsLoggedIn = isLoggedIn(CPF)
+    if resultIsLoggedIn != msg_success:
+        print("\nOperation denied: " + resultIsLoggedIn["message"])
+        return resultIsLoggedIn
+
+    # Verifica se o formato do IBAN é válido
+    if (isinstance(IBAN, str) == False) or ((len(IBAN) == 8) == False) or (IBAN.isdigit() == False):
+        print("\nOperation denied: " + msg_err_invalidIban["message"])
+        return msg_err_invalidIban  # Invalid IBAN format
+
+    # Verifica se a conta existe
+    resultVerifyExistenceConta = verifyExistenceConta(CPF, IBAN)
+    if resultVerifyExistenceConta != msg_success:
+        print("\nOperation denied: " + resultVerifyExistenceConta["message"])
+        return resultVerifyExistenceConta
+
     report = sorted(
         [t for t in _transactions if t["sourceIBAN"] == IBAN or t["destIBAN"] == IBAN],
         key=lambda x: x["date"],
     )
 
-    # Gera o PDF em UTF-32
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -212,6 +302,9 @@ def generateReport(CPF, IBAN):
         if t["sourceIBAN"] == t["destIBAN"]:
             transaction_type = "Deposit".encode("utf-32").decode("utf-32")
             details = f"Amount: {t['amount']}".encode("utf-32").decode("utf-32")
+        elif t["destIBAN"] == IBAN and t["sourceIBAN"] != IBAN:
+            transaction_type = "Received".encode("utf-32").decode("utf-32")
+            details = f"Amount: {t['amount']} by {t['sourceIBAN']}".encode("utf-32").decode("utf-32")
         else:
             transaction_type = "Transfer".encode("utf-32").decode("utf-32")
             details = f"Amount: {t['amount']} to {t['destIBAN']}".encode("utf-32").decode("utf-32")
@@ -220,25 +313,37 @@ def generateReport(CPF, IBAN):
 
     utf32_pdf_file = f"report_{CPF}_{IBAN}_utf32.pdf"
     pdf.output(utf32_pdf_file)
-
-    # Determina o comando de conversão com base no sistema operacional
     
     if platform.system() == "Windows":
         conversion_command = f"utils\\conversor\\conv_utf32_utf8.exe {utf32_pdf_file}"
     else:
         conversion_command = f"./utils/conversor/conv_utf32_utf8 {utf32_pdf_file}"
 
-    # Executa o comando
     conversion_result = os.system(conversion_command)
 
     if conversion_result != 0:
         return
-
-    # Retorna o arquivo convertido
+    
     return
 
 def updateTransactions(sourceIBAN, destIBAN, amount):
-    """Adiciona uma nova transação à lista."""
+    """
+    Description: Records a new transaction in the transactions list.\n
+    Coupling:\n
+        Input parameters:
+            - sourceIBAN -> The source IBAN involved in the transaction.
+            - destIBAN -> The destination IBAN involved in the transaction.
+            - amount -> The amount of money transferred or deposited.
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The `sourceIBAN` and `destIBAN` must be valid strings.
+            - `amount` must be a positive or negative numerical value.
+        Exit assertion:
+            - A new transaction dictionary is appended to the global `_transactions` list.
+    Restrictions: Does not validate the content of the parameters or check for duplicate transactions.
+    """
+
     transaction = {
         "sourceIBAN": sourceIBAN,
         "destIBAN": destIBAN,
