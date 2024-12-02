@@ -1,5 +1,6 @@
 import unittest
 from conta import *
+from .conta import verifyFormatIban
 from user import *
 from return_messages import *
 
@@ -7,7 +8,7 @@ contas = []
 userTest = {"name": "Pedro", "surname": "Rossi", "cpf": "12345678910", "password": "mariorossi1234"}
 userTest2 = {"name": "Vinicius", "surname": "Amaral", "cpf": "48775489747", "password": "mkjiooac123"}
 
-class TestUser(unittest.TestCase):
+class TestConta(unittest.TestCase):
     def test_01_createNewAccount_1(self):
         print("Test Case 01 - Creating a new account with success")
         ret_val = createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
