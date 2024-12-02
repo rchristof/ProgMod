@@ -14,7 +14,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(ret_val, msg_success)
 
     def test_02_createNewAccount_2(self):
-        print("Test Case 02 - Creating a new account ")
+        print("Test Case 02 - Creating a new user that already exists ")
         ret_val = createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
         self.assertEqual(ret_val, msg_err_userAlreadyExists)
 
