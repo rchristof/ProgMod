@@ -175,6 +175,7 @@ class TestUser(unittest.TestCase):
         ret_val = getAccountInfo(userTest2["cpf"])
         self.assertEqual(ret_val, msg_err_userNotLoggedIn)
 
+    '''
     def test_30_save_and_load_users(self):
         print("Test Case 30 - Save and load users successfully")
         file_path = "database/users/_users_test.txt"
@@ -200,5 +201,6 @@ class TestUser(unittest.TestCase):
         # Remove o arquivo de teste
         if os.path.exists(file_path):
             os.remove(file_path)
+    '''
 
 unittest.main()

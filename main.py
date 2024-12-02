@@ -73,6 +73,7 @@ def menu_logged_user(cpf):
             elif choice == 4:
                 clear_console()
                 operations.generateReport(cpf, user.getAccountInfo(cpf)["IBAN"])
+                print("\nReport generated.")
             elif choice == 5:
                 clear_console()
                 user.logout(cpf)

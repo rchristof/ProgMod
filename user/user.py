@@ -94,6 +94,22 @@ def saveUsersToFile():
         json.dump(getUsers(), file, indent=4)  # Obtém a lista atual
 
 def getAccountInfo(cpf):
+    """
+        Objective: returns all the info about the user and its conta (name, surname, CPF, IBAN, password and balance)\n
+        Description: helps for Money Transfer requirement
+        Coupling:\n
+            Input parameters:
+                cpf -> user’s CPF (a string with exactly 11 digits)
+            Output values:
+                msg_err_invalidCpf -> if CPF is not valid
+                msg_err_userNotLoggedIn -> if the user with the given CPF is not logged in
+                msg_err_userNotExists -> if a user with the given CPF doesn’t exist
+                object with the following keys: {"Name", "Surname", "CPF", "IBAN", "Password", "Balance"} -> in case of success
+        Coupling Conditions:\n
+            entry assertion: none
+            exit assertion: none
+        Restrictions: msg_err_userNotExists can’t never be returned because if the user doesn’t exist, isLoggedIn return msg_err_userNotLoggedIn
+    """
     if len(cpf) != 11 or cpf.isdigit() == False:
         return msg_err_invalidCpf
 
@@ -112,27 +128,10 @@ def getAccountInfo(cpf):
             return {"Name": user["name"], "Surname": user["surname"], "CPF": user["cpf"], "IBAN": resultGetConta["IBAN"], "Password": user["password"], "Balance": resultGetConta["balance"]}
     return msg_err_userNotExists
 
-def is_valid_name_or_surname(name):
-    if not isinstance(name, str):
-        return False
-    
-    # Regex per verificare che sia una stringa non vuota che può contenere solo caratteri alfabetici, spazi, apostrofi
-    # e trattini, di lunghezza massima 50 caratteri
-    pattern = r"^[a-zA-Z'’ -]{1,50}$"
-    return bool(re.match(pattern, name))
-
-def is_valid_password(password):
-    if not isinstance(password, str):
-        return False
-    
-    # Regex per verificare che sia una stringa di lunghezza minima 4 caratteri e massima 50
-    pattern = r"^.{4,50}$"
-    return bool(re.match(pattern, password))
-
 
 def createNewUser(name, surname, cpf, password):
     """
-        Description: implements Account Creation requirements\n
+        Description: implements Account Creation requirement\n
         Coupling:\n
             Input parameters:
                 name -> user’s first name (a not empty string with at most 50 chars, which can only contain alphabetic chars, spaces, "'" and "-")
@@ -155,7 +154,11 @@ def createNewUser(name, surname, cpf, password):
     """
     from conta import createNewConta
 
-    if is_valid_name_or_surname(name) == False or is_valid_name_or_surname(surname) == False:
+    # Regex per verificare che sia una stringa non vuota che può contenere solo caratteri alfabetici, spazi, apostrofi
+    # e trattini, di lunghezza massima 50 caratteri
+    pattern = r"^[a-zA-Z'’ -]{1,50}$"
+    isValidNameOrSurn = isinstance(name, str) and isinstance(surname, str) and (bool(re.match(pattern, name)) and bool(re.match(pattern, surname)))
+    if not isValidNameOrSurn:
         print("\nError: " + msg_err_invalidNameSurname["message"])
         return msg_err_invalidNameSurname
     
@@ -163,7 +166,10 @@ def createNewUser(name, surname, cpf, password):
         print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
 
-    if is_valid_password(password) == False:
+    # Regex per verificare che sia una stringa di lunghezza minima 4 caratteri e massima 50
+    pattern = r"^.{4,50}$"
+    isValidPassword = isinstance(password, str) and bool(re.match(pattern, password))
+    if not isValidPassword:
         print("\nError: " + msg_err_invalidPassword["message"])
         return msg_err_invalidPassword
     
@@ -199,8 +205,8 @@ def login(cpf, password):
             exit assertion:
                 msg_success -> user’s CPF is saved in memory as the current logged one, eventually overriding the previous one
                 other cases -> none
-        Restrictions: the cases of a) password not valid, b) cpf existing but wrong password and c) cpf not existing are all grouped in the same error message output value,
-        so the function caller can't know which one triggered the error
+        Restrictions: the cases of a) password not valid, b) CPF existing but wrong password and c) CPF not existing, are all grouped in the same error message output value,
+        so the function caller can’t know which one triggered the error
     """
     if len(cpf) != 11 or cpf.isdigit() == False:
         print("\nError: " + msg_err_invalidCpf["message"])
@@ -218,6 +224,23 @@ def login(cpf, password):
 
 
 def logout(cpf):
+    """
+        Description: implements Logout requirement\n
+        Coupling:\n
+            Input parameters:
+                cpf -> user’s CPF (a string with exactly 11 digits)
+            Output values:
+                msg_err_invalidCpf -> if CPF is not valid
+                msg_err_userNotLoggedIn -> if the user is not logged in or if a user with the given CPF doesn’t exist
+                msg_success -> if the previous logged in user has been logged out with success
+        Coupling Conditions:\n
+            entry assertion: none
+            exit assertion:
+                msg_success -> former logged in user’s CPF is freed from memory
+                other cases -> none
+        Restrictions: the cases of a) CPF existing but not logged in and b) CPF not existing, are all grouped in the same error message output value,
+        so the function caller can’t know which one triggered the error
+    """
     if len(cpf) != 11 or cpf.isdigit() == False:
         print("\nError: " + msg_err_invalidCpf["message"])
         return msg_err_invalidCpf
@@ -233,6 +256,21 @@ def logout(cpf):
 
 
 def isLoggedIn(cpf):
+    """
+        Description: helps for Money Deposit and Money Transfer requirements, since the user has to be logged in to complete these operations\n
+        Coupling:\n
+            Input parameters:
+                cpf -> user’s CPF (a string with exactly 11 digits)
+            Output values:
+                msg_err_invalidCpf -> if CPF is not valid
+                msg_err_userNotLoggedIn -> if the user is not logged in or if a user with the given CPF doesn’t exist
+                msg_success -> if the user is currently logged in
+        Coupling Conditions:\n
+            entry assertion: none
+            exit assertion: none
+        Restrictions: the cases of a) CPF existing but not logged in and b) CPF not existing, are all grouped in the same error message output value,
+        so the function caller can’t know which one triggered the error
+    """
     if len(cpf) != 11 or cpf.isdigit() == False:
         return msg_err_invalidCpf
 
@@ -243,6 +281,19 @@ def isLoggedIn(cpf):
     
 
 def verifyExistenceUser(cpf):
+    """
+        Description: helps for Account Creation requirement, since it’s not possible to create the same user twice\n
+        Coupling:\n
+            Input parameters:
+                cpf -> user’s CPF (a string with exactly 11 digits)
+            Output values:
+                msg_err_invalidCpf -> if CPF is not valid
+                msg_err_userNotExists -> if a user with the given CPF doesn’t exist
+                msg_success -> if the user exists
+        Coupling Conditions:\n
+            entry assertion: none
+            exit assertion: none
+    """
     if len(cpf) != 11 or cpf.isdigit() == False:
         return msg_err_invalidCpf
     
