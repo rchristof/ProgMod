@@ -4,7 +4,7 @@ import os
 import json
 import random
 
-__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta", "loadContasFromFile", "saveContasToFile", "verifyFormatIban"]
+__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta", "loadContasFromFile", "saveContasToFile"]
 
 _contas = []
 
