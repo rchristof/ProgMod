@@ -26,7 +26,7 @@ def getUsers():
     return _users.copy()
 
 
-def setUsers(transactions):
+def setUsers(users):
     """
     Description: Replaces the current users list with a new one.\n
     Coupling:\n
@@ -42,7 +42,7 @@ def setUsers(transactions):
     """
 
     _users.clear()
-    _users.extend(transactions)
+    _users.extend(users)
 
 
 def loadUsersFromFile():

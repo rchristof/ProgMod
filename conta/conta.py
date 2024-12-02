@@ -25,7 +25,7 @@ def getContas():
     return _contas.copy()
 
 
-def setContas(transactions):
+def setContas(contas):
     """
     Description: Replaces the current accounts list with a new one.\n
     Coupling:\n
@@ -41,7 +41,7 @@ def setContas(transactions):
     """
 
     _contas.clear()
-    _contas.extend(transactions)
+    _contas.extend(contas)
 
 
 def loadContasFromFile():
