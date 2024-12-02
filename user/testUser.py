@@ -2,6 +2,7 @@ import unittest
 from user import *
 from conta import getConta
 from return_messages import *
+import os
 
 userTest = {"name": "Mario", "surname": "Rossi", "cpf": "12345678910", "password": "mariorossi1234"}
 userTest2 = {"name": "Gianni", "surname": "Verdi", "cpf": "22345678910", "password": "giannigianni"}
@@ -173,5 +174,31 @@ class TestUser(unittest.TestCase):
         print("Test Case 29 - getAccountInfo, user not logged in")
         ret_val = getAccountInfo(userTest2["cpf"])
         self.assertEqual(ret_val, msg_err_userNotLoggedIn)
+
+    def test_30_save_and_load_users(self):
+        print("Test Case 30 - Save and load users successfully")
+        file_path = "database/users/_users_test.txt"
+
+        # Garante que o arquivo de teste não exista
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        # Adiciona um usuário e salva no arquivo
+        createNewUser(userTest["name"], userTest["surname"], userTest["cpf"], userTest["password"])
+        saveUsersToFile()
+
+        # Limpa a lista de usuários e recarrega do arquivo
+        from user import getUsers, setUsers, loadUsersFromFile
+        setUsers([])
+        loadUsersFromFile()
+
+        # Verifica se os dados estão corretos
+        users = getUsers()
+        self.assertEqual(len(users), 1, "Usuários não foram carregados corretamente do arquivo.")
+        self.assertEqual(users[0]["cpf"], userTest["cpf"], "Usuário carregado não corresponde ao esperado.")
+
+        # Remove o arquivo de teste
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
 unittest.main()

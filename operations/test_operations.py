@@ -86,30 +86,31 @@ class TestOperations(unittest.TestCase):
         ret_val = makeTransfer(userTest["cpf"], userTest2["cpf"], getConta(userTest["cpf"])["IBAN"], getConta(userTest2["cpf"])["IBAN"], "invalid_val")
         self.assertEqual(ret_val, msg_err_invalidVal)
 
-    """APAGAR ESSES TESTES DEPOIS"""
     def test_14_generateReport_success(self):
         print("Test Case 14 - Generate Report with success")
         ret_val = generateReport(userTest["cpf"], getConta(userTest["cpf"])["IBAN"])
         self.assertEqual(ret_val, None)
 
-    def test_15_saveTransactionsToFile_success(self):
-        print("Test Case 15 - Save Transactions To File with success")
-        ret_val = saveTransactionsToFile(userTest["cpf"])
-        self.assertEqual(ret_val, None)
+    def test_15_generateReport_user_not_logged_in(self):
+        print("Test Case 15 - Generate Report when user is not logged in")
+        logout(userTest["cpf"])
+        ret_val = generateReport(userTest["cpf"], getConta(userTest["cpf"])["IBAN"])
+        self.assertEqual(ret_val, msg_err_userNotLoggedIn)
 
-        setTransactions([]) #apagar
-        ret_val = getTransactions()
-        print(ret_val)
-
-    def test_16_loadTransactionsFromFile_success(self):
-        print("Test Case 16 - Load Transactions From File with success")
-        ret_val = loadTransactionsFromFile(userTest["cpf"])
-        self.assertEqual(ret_val, None)
+    def test_16_generateReport_invalid_iban(self):
+        print("Test Case 16 - Generate Report with invalid IBAN")
+        login(userTest["cpf"], userTest["password"])
+        ret_val = generateReport(userTest["cpf"], "invalid_iban")
+        self.assertEqual(ret_val, msg_err_invalidIban)
     
-    def test_17_getTransactions_success(self):
-        print("Test Case 17 - Get Transactions with success")
-        ret_val = getTransactions()
-        print(ret_val)
-
+    def test_17_generateReport_account_not_exists(self):
+        print("Test Case 17 - Generate Report when account does not exist")
+        ret_val = generateReport(userTest["cpf"], validIban)
+        self.assertEqual(ret_val, msg_err_contaNotExists)
+    
+    def test_18_generateReport_invalid_cpf(self):
+        print("Test Case 18 - Generate Report with invalid CPF")
+        ret_val = generateReport("invalid_cpf", validIban)
+        self.assertEqual(ret_val, msg_err_invalidCpf)
 
 unittest.main()

@@ -151,6 +151,8 @@ class TestUser(unittest.TestCase):
         val = 0
         ret_val = updateBalance(cpf, iban, val)
         self.assertEqual(ret_val, msg_err_invalidVal)
+    
+
 
 if __name__ == '__main__':
     unittest.main()

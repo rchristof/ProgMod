@@ -10,32 +10,86 @@ _users = []
 
 
 def getUsers():
-    """Retorna uma cópia da lista de users."""
+    """
+    Description: Retrieves a copy of the current users list.\n
+    Coupling:\n
+        Input parameters: none
+        Output values:
+            - A list of user dictionaries currently stored in memory.
+    Coupling Conditions:\n
+        Entry assertion: none
+        Exit assertion:
+            - A copy of the users list is returned without modifying the original list.
+    Restrictions: The returned list is independent of the original and modifications to it do not affect the global `_users`.
+    """
+
     return _users.copy()
 
 
 def setUsers(transactions):
-    """Substitui a lista de users."""
+    """
+    Description: Replaces the current users list with a new one.\n
+    Coupling:\n
+        Input parameters:
+            - transactions -> A list of user dictionaries to replace the current list.
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The input must be a valid list of dictionaries formatted as users.
+        Exit assertion:
+            - The global `_users` list is replaced with the provided one.
+    Restrictions: Assumes the provided list contains valid user dictionaries and does not validate its content.
+    """
+
     _users.clear()
     _users.extend(transactions)
 
 
-def loadUsersFromFile(file_path="database/users/_users.txt"):
-    """Lê os users de um arquivo e preenche a lista."""
+def loadUsersFromFile():
+    """
+    Description: Loads users from a file into memory.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The file should exist at the predefined path and be formatted as a valid JSON list of users.
+        Exit assertion:
+            - The global `_users` list is updated with the content of the file.
+            - If the file is missing or invalid, `_users` is set to an empty list.
+    Restrictions:
+        - If the file is malformed (not a valid JSON), `_users` is cleared.
+        - Assumes the file path is correctly defined as `database/users/_users.txt`.
+    """
+
+    file_path="database/users/_users.txt"
     try:
         with open(file_path, "r") as file:
             transactions = json.load(file)
             setUsers(transactions)  # Atualiza a lista de transações
     except FileNotFoundError:
-        print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
         setUsers([])  # Inicializa a lista como vazia
     except json.JSONDecodeError:
-        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
         setUsers([])
 
 
-def saveUsersToFile(file_path="database/users/_users.txt"):
-    """Sobrescreve o arquivo com os users atuais da lista."""
+def saveUsersToFile():
+    """
+    Description: Saves the current users list to a file.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The global `_users` list must be a valid list of user dictionaries.
+        Exit assertion:
+            - The contents of `_users` are written to the predefined file path in JSON format.
+    Restrictions:
+        - The file path is predefined as `database/users/_users.txt`.
+        - Assumes the directory structure exists and is writable.
+    """
+
+    file_path="database/users/_users.txt"
     with open(file_path, "w") as file:
         json.dump(getUsers(), file, indent=4)  # Obtém a lista atual
 

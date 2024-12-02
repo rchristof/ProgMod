@@ -9,32 +9,86 @@ __all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBal
 _contas = []
 
 def getContas():
-    """Retorna uma cópia da lista de users."""
+    """
+    Description: Retrieves a copy of the current accounts list.\n
+    Coupling:\n
+        Input parameters: none
+        Output values:
+            - A list of account dictionaries currently stored in memory.
+    Coupling Conditions:\n
+        Entry assertion: none
+        Exit assertion:
+            - A copy of the accounts list is returned without modifying the original list.
+    Restrictions: The returned list is independent of the original and modifications to it do not affect the global `_contas`.
+    """
+
     return _contas.copy()
 
 
 def setContas(transactions):
-    """Substitui a lista de users."""
+    """
+    Description: Replaces the current accounts list with a new one.\n
+    Coupling:\n
+        Input parameters:
+            - transactions -> A list of account dictionaries to replace the current list.
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The input must be a valid list of dictionaries formatted as accounts.
+        Exit assertion:
+            - The global `_contas` list is replaced with the provided one.
+    Restrictions: Assumes the provided list contains valid account dictionaries and does not validate its content.
+    """
+
     _contas.clear()
     _contas.extend(transactions)
 
 
-def loadContasFromFile(file_path="database/contas/_contas.txt"):
-    """Lê os users de um arquivo e preenche a lista."""
+def loadContasFromFile():
+    """
+    Description: Loads accounts from a file into memory.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The file should exist at the predefined path and be formatted as a valid JSON list of accounts.
+        Exit assertion:
+            - The global `_contas` list is updated with the content of the file.
+            - If the file is missing or invalid, `_contas` is set to an empty list.
+    Restrictions:
+        - If the file is malformed (not a valid JSON), `_contas` is cleared.
+        - Assumes the file path is correctly defined as `database/contas/_contas.txt`.
+    """
+
+    file_path="database/contas/_contas.txt"
     try:
         with open(file_path, "r") as file:
             transactions = json.load(file)
             setContas(transactions)  # Atualiza a lista de transações
     except FileNotFoundError:
-        print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
         setContas([])  # Inicializa a lista como vazia
     except json.JSONDecodeError:
-        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
         setContas([])
 
 
-def saveContasToFile(file_path="database/contas/_contas.txt"):
-    """Sobrescreve o arquivo com os users atuais da lista."""
+def saveContasToFile():
+    """
+    Description: Saves the current accounts list to a file.\n
+    Coupling:\n
+        Input parameters: none
+        Output values: none
+    Coupling Conditions:\n
+        Entry assertion:
+            - The global `_contas` list must be a valid list of account dictionaries.
+        Exit assertion:
+            - The contents of `_contas` are written to the predefined file path in JSON format.
+    Restrictions:
+        - The file path is predefined as `database/contas/_contas.txt`.
+        - Assumes the directory structure exists and is writable.
+    """
+
+    file_path="database/contas/_contas.txt"
     with open(file_path, "w") as file:
         json.dump(getContas(), file, indent=4)  # Obtém a lista atual
 
