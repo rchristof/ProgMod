@@ -3,6 +3,7 @@ import user
 import conta
 import operations
 import return_messages
+import os
 
 def main_menu():
     user.loadUsersFromFile()
@@ -20,15 +21,18 @@ def main_menu():
             choice = int(input("\nEnter your choice (1-3): "))
 
             if choice == 1:
+                clear_console()
                 user_create_user()
 
             elif choice == 2:
+                clear_console()
                 result = user_login()
                 if result != None:
                     cpf = result
                     menu_logged_user(cpf)
 
             elif choice == 3:
+                clear_console()
                 print("\nExiting the application. Goodbye!\n")
                 conta.saveContasToFile()
                 user.saveUsersToFile()
@@ -42,6 +46,7 @@ def main_menu():
             print("\nInvalid input. Please enter a valid number.")
 
 def menu_logged_user(cpf):
+    clear_console()
     name = user.getAccountInfo(cpf)["Name"]
     print(f"\n\nWelcome {name}!")
 
@@ -57,19 +62,26 @@ def menu_logged_user(cpf):
             choice = int(input("\nEnter your choice (1-5): "))
 
             if choice == 1:
+                clear_console()
                 user_get_info_account(cpf)
             elif choice == 2:
+                clear_console()
                 user_money_deposit(cpf)
             elif choice == 3:
+                clear_console()
                 user_money_transfer(cpf)
             elif choice == 4:
+                clear_console()
                 operations.generateReport(cpf, user.getAccountInfo(cpf)["IBAN"])
             elif choice == 5:
+                clear_console()
                 user.logout(cpf)
                 break
             else:
+                clear_console()
                 print("\nInvalid choice. Please enter a number between 1 and 5.")
         except ValueError:
+            clear_console()
             print("\nInvalid input. Please enter a valid number.")
 
 def user_money_transfer(cpf):
@@ -119,6 +131,9 @@ def user_login():
         return None
     else:
         return cpf
+
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 if __name__ == "__main__":
     main_menu()
