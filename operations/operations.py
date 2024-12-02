@@ -12,53 +12,34 @@ __all__ = ["makeDeposit", "makeTransfer", "generateReport", "loadTransactionsFro
 _transactions = []
 
 def getTransactions():
-    """Retorna uma cópia da lista de transações."""
+    """Retorna uma cópia da lista de users."""
     return _transactions.copy()
 
 
 def setTransactions(transactions):
-    """Substitui a lista de transações."""
+    """Substitui a lista de users."""
     _transactions.clear()
     _transactions.extend(transactions)
 
 
-def loadTransactionsFromFile(CPF, file_path_template="database/transactions/_transactions-{cpf}.txt"):
-    """
-    Lê as transações do arquivo correspondente ao CPF e preenche a lista.
-    Se o arquivo não for encontrado, inicializa a lista vazia.
-    """
-    # Substitui {cpf} pelo CPF no caminho do arquivo
-    file_path = file_path_template.replace("{cpf}", CPF)
-
+def loadTransactionsFromFile(file_path="database/transactions/_transactions.txt"):
+    """Lê os users de um arquivo e preenche a lista."""
     try:
-        # Tenta abrir o arquivo e carregar as transações
         with open(file_path, "r") as file:
             transactions = json.load(file)
             setTransactions(transactions)  # Atualiza a lista de transações
-            print(f"Transações carregadas do arquivo: {file_path}")
     except FileNotFoundError:
         print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
         setTransactions([])  # Inicializa a lista como vazia
     except json.JSONDecodeError:
-        print(f"Erro ao decodificar o arquivo {file_path}. Inicializando lista vazia.")
-        setTransactions([])  # Inicializa a lista como vazia
+        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
+        setTransactions([])
 
-def saveTransactionsToFile(CPF, file_path_template="database/transactions/_transactions-{cpf}.txt"):
-    """
-    Sobrescreve o arquivo com as transações atuais da lista.
-    O nome do arquivo é baseado no CPF.
-    """
-    # Substitui <cpf> pelo CPF no caminho do arquivo
-    file_path = file_path_template.replace("{cpf}", CPF)
 
-    # Garante que o diretório existe
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory, exist_ok=True)
-
-    # Salva as transações no arquivo
+def saveTransactionsToFile(file_path="database/transactions/_transactions.txt"):
+    """Sobrescreve o arquivo com os users atuais da lista."""
     with open(file_path, "w") as file:
-        json.dump(getTransactions(), file, indent=4)
+        json.dump(getTransactions(), file, indent=4)  # Obtém a lista atual
 
 def makeDeposit(CPF, IBAN, val):
     """
@@ -230,6 +211,9 @@ def generateReport(CPF, IBAN):
         if t["sourceIBAN"] == t["destIBAN"]:
             transaction_type = "Deposit".encode("utf-32").decode("utf-32")
             details = f"Amount: {t['amount']}".encode("utf-32").decode("utf-32")
+        elif t["destIBAN"] == IBAN and t["sourceIBAN"] != IBAN:
+            transaction_type = "Received".encode("utf-32").decode("utf-32")
+            details = f"Amount: {t['amount']} by {t['sourceIBAN']}".encode("utf-32").decode("utf-32")
         else:
             transaction_type = "Transfer".encode("utf-32").decode("utf-32")
             details = f"Amount: {t['amount']} to {t['destIBAN']}".encode("utf-32").decode("utf-32")

@@ -1,10 +1,42 @@
 from user import *
 from return_messages import *
+import os
+import json
 import random
 
-__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta"]
+__all__ = ["updateBalance", "verifyExistenceConta", "createNewConta", "verifyBalance", "getConta", "loadContasFromFile", "saveContasToFile"]
 
-contas = []
+_contas = []
+
+def getContas():
+    """Retorna uma cópia da lista de users."""
+    return _contas.copy()
+
+
+def setContas(transactions):
+    """Substitui a lista de users."""
+    _contas.clear()
+    _contas.extend(transactions)
+
+
+def loadContasFromFile(file_path="database/contas/_contas.txt"):
+    """Lê os users de um arquivo e preenche a lista."""
+    try:
+        with open(file_path, "r") as file:
+            transactions = json.load(file)
+            setContas(transactions)  # Atualiza a lista de transações
+    except FileNotFoundError:
+        print(f"Arquivo {file_path} não encontrado. Inicializando lista vazia.")
+        setContas([])  # Inicializa a lista como vazia
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o arquivo de transações. Inicializando lista vazia.")
+        setContas([])
+
+
+def saveContasToFile(file_path="database/contas/_contas.txt"):
+    """Sobrescreve o arquivo com os users atuais da lista."""
+    with open(file_path, "w") as file:
+        json.dump(getContas(), file, indent=4)  # Obtém a lista atual
 
 def getConta(CPF):
     """
@@ -23,7 +55,7 @@ def getConta(CPF):
                 msg_err_contaNotExists -> returned if no matching account is found
         Restrictions: assumes that the global variable 'contas' is a list of dictionaries where each dictionary represents an account with a 'CPF' field.
     """
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF:
             return conta
     return msg_err_contaNotExists  # Conta not exists
@@ -76,7 +108,7 @@ def createNewConta(CPF):
 
     iban = str(random.randint(10000000, 99999999)) 
 
-    contas.append({"CPF": CPF, "IBAN": iban, "balance": 0})
+    _contas.append({"CPF": CPF, "IBAN": iban, "balance": 0})
 
     return msg_success  # Success
 
@@ -108,7 +140,7 @@ def updateBalance(CPF, IBAN, val):
     if not isinstance(val, (int, float)) or val == 0:
         return msg_err_invalidVal  # Invalid val
 
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF and conta['IBAN'] == IBAN:
             if conta['balance'] + val < 0:
                 return msg_err_insufficientBal  # Insufficient balance
@@ -138,7 +170,7 @@ def verifyExistenceConta(CPF, IBAN=None):
     if len(CPF) != 11 or CPF.isdigit() == False:
             return msg_err_invalidCpf
 
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF:
             if IBAN is None or conta['IBAN'] == IBAN:
                 return msg_success  # Success
@@ -169,7 +201,7 @@ def verifyBalance(CPF, IBAN, val):
         return msg_err_invalidVal  # Invalid val
 
     # Encontra a conta correspondente
-    for conta in contas:
+    for conta in _contas:
         if conta['CPF'] == CPF and conta['IBAN'] == IBAN:
             if conta['balance'] >= val:
                 return msg_success  # Success

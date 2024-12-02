@@ -1,10 +1,13 @@
 import sys  # Per chiudere l'applicazione in modo pulito
 import user
+import conta
 import operations
 import return_messages
 
 def main_menu():
     user.loadUsersFromFile()
+    conta.loadContasFromFile()
+    operations.loadTransactionsFromFile()
     while True:
         # Principal menu
         print("\n\n===== Main Menu =====")
@@ -27,6 +30,9 @@ def main_menu():
 
             elif choice == 3:
                 print("\nExiting the application. Goodbye!\n")
+                conta.saveContasToFile()
+                user.saveUsersToFile()
+                operations.saveTransactionsToFile()
                 sys.exit(0)  
 
             else:
@@ -36,7 +42,6 @@ def main_menu():
             print("\nInvalid input. Please enter a valid number.")
 
 def menu_logged_user(cpf):
-    operations.loadTransactionsFromFile(cpf)
     name = user.getAccountInfo(cpf)["Name"]
     print(f"\n\nWelcome {name}!")
 
@@ -58,11 +63,9 @@ def menu_logged_user(cpf):
             elif choice == 3:
                 user_money_transfer(cpf)
             elif choice == 4:
-                print("todo")
+                operations.generateReport(cpf, user.getAccountInfo(cpf)["IBAN"])
             elif choice == 5:
                 user.logout(cpf)
-                operations.saveTransactionsToFile(cpf)
-                user.saveUsersToFile()
                 break
             else:
                 print("\nInvalid choice. Please enter a number between 1 and 5.")
@@ -102,7 +105,6 @@ def user_create_user():
     password = input("Insert your password (at least 4 char): ")
 
     result = user.createNewUser(name, surname, cpf, password)
-    user.saveUsersToFile()
     if(result != return_messages.msg_success):
         print("Account not created")
 
