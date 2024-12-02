@@ -1,8 +1,0 @@
-[
-    {
-        "name": "rafael",
-        "surname": "dana",
-        "cpf": "12345678912",
-        "password": "1234"
-    }
-]
