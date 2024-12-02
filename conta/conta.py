@@ -14,9 +14,9 @@ def getContas():
     Coupling:\n
         Input parameters: none
         Output values:
-            - A list of account dictionaries currently stored in memory.
+            - A list of account dictionaries currently stored in the list.
     Coupling Conditions:\n
-        Entry assertion: none
+        Entry assertion: The user has to be logged
         Exit assertion:
             - A copy of the accounts list is returned without modifying the original list.
     Restrictions: The returned list is independent of the original and modifications to it do not affect the global `_contas`.
