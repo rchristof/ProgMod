@@ -37,7 +37,7 @@ def main_menu():
             print("\nInvalid input. Please enter a valid number.")
 
 def menu_logged_user(cpf):
-    name = user.getAccountInfo(cpf)["name"]
+    name = user.getAccountInfo(cpf)["Name"]
     print(f"\n\nWelcome {name}!")
 
     while True:
