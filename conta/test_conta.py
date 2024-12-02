@@ -19,7 +19,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(ret_val, msg_err_userAlreadyExists)
 
     def test_03_createNewAccount_3(self):
-        print("Test Case 03 - Creating a new account ")
+        print("Test Case 03 - Creating a new account that already exists ")
         cpf = "12345678910"
         ret_val = createNewConta(cpf)
         self.assertEqual(ret_val, msg_err_contaAlreadyExists)
