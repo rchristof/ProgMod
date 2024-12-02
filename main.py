@@ -37,7 +37,7 @@ def main_menu():
             print("\nInvalid input. Please enter a valid number.")
 
 def menu_logged_user(cpf):
-    name = user.getAccountInfo(cpf)["Name"]
+    name = user.getAccountInfo(cpf)["name"]
     print(f"\n\nWelcome {name}!")
 
     while True:
@@ -62,7 +62,7 @@ def menu_logged_user(cpf):
             elif choice == 5:
                 user.logout(cpf)
                 operations.saveTransactionsToFile(cpf)
-                user.saveUsersToFile(cpf)
+                user.saveUsersToFile()
                 break
             else:
                 print("\nInvalid choice. Please enter a number between 1 and 5.")
